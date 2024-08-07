@@ -21,6 +21,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "src": "file:"
+    "src": "file:",
+    "yup": "^1.4.0"
   }
 }

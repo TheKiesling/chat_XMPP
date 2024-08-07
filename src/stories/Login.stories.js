@@ -1,7 +1,7 @@
 import LoginForm from '../forms/LoginForm';
 
 export default {
-    title: 'Pages/Login',
+    title: 'Forms/Login',
     component: LoginForm,
     parameters: {
         layout: 'centered',
@@ -9,5 +9,5 @@ export default {
     tags: ['autodocs'],
 };
 
-export const Primary = {
+export const Login = {
 };
