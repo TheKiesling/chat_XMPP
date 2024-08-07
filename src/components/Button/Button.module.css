@@ -1,0 +1,35 @@
+.button {
+    font-family: 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight: 700;
+    border: none;
+    border-radius: 3em;
+    line-height: 1;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
+.button:hover:not(:disabled) {
+    opacity: 0.65;
+}
+
+.button:disabled {
+    color: #F4989E;
+    cursor: not-allowed;
+    background-color: #DADADA;
+}
+
+.primary {
+    color: white;
+    background-color: #7EA8D9;
+}
+
+.secondary {
+    color: #303030;
+    background-color: #DADADA;
+    box-shadow: 0 0 0 2px #303030 inset;
+}

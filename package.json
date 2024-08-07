@@ -10,8 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@xmpp/client": "^0.13.1",
+    "@xmpp/debug": "^0.13.0",
+    "@xmpp/xml": "^0.13.1",
+    "chat-xmpp": "file:",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "simple-xmpp": "^2.3.1"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",
