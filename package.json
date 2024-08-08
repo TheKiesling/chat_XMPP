@@ -16,6 +16,7 @@
     "chat-xmpp": "file:",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.0",
     "simple-xmpp": "^2.3.1"
   },
   "devDependencies": {
