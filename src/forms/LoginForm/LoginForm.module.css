@@ -3,7 +3,6 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
 }
 
 .form {
@@ -16,5 +15,11 @@
   border: 1px solid #ccc;
   border-radius: 5px;
   padding: 20px;
+}
+
+.error {
+  color: #F4989E;
+  font-size: 14px;
+  margin-top: 10px;
 }
 

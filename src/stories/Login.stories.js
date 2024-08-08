@@ -1,13 +1,13 @@
-import LoginForm from '../forms/LoginForm';
+import Login from "../pages/Login";
 
 export default {
-    title: 'Forms/Login',
-    component: LoginForm,
+    title: 'Pages/Login',
+    component: Login,
     parameters: {
-        layout: 'centered',
+        layout: 'fullscreen',
     },
     tags: ['autodocs'],
 };
 
-export const Login = {
+export const Default = {
 };
