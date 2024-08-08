@@ -2,14 +2,9 @@ import { useContext } from 'react';
 import SessionContext from '../context/SessionContext';
 
 function useLogin() {
-  const { login, loading, error, username } = useContext(SessionContext);
+    const { login, success, error, loading } = useContext(SessionContext);
 
-  return {
-    login,
-    loading,
-    error,
-    success: !!username,
-  };
+    return { login, success, error, loading };
 }
 
 export default useLogin;
