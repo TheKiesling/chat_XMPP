@@ -2,8 +2,12 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styles from './Header.module.css'
 import Button from '../Button'
+import useLogout from '../../hooks/useLogout'
 
 const Header = ({ username }) => {
+
+    const { logout } = useLogout();
+
     return (
         <header className={styles.header}>
             <div className={styles.logo}>
@@ -16,6 +20,7 @@ const Header = ({ username }) => {
                 <Button
                     children="Logout"
                     secondary
+                    onClick={logout}
                 />
             </div>
         </header>
