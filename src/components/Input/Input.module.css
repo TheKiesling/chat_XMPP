@@ -13,7 +13,7 @@ html, body{
 .label{
     font-size: 14px;
     font-weight: 500;
-    color: #303030;
+    color: #DADADA;
     margin-bottom: 5px;
 }
 
@@ -24,16 +24,18 @@ html, body{
     color: #303030;
     border-radius: 10px;
     margin-top: 5px;
+    background-color: #DADADA;
+    font-family: 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 .error{
     color: #F4989E;
-    border-color: #F4989E;
+    border: 3px solid #F4989E;
 }
 
 .errorMessage{
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
     color: #F4989E;
     margin-top: 5px;
 }

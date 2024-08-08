@@ -31,5 +31,4 @@
 .secondary:not(:disabled) {
     color: #303030;
     background-color: #DADADA;
-    box-shadow: 0 0 0 2px #303030 inset;
 }
