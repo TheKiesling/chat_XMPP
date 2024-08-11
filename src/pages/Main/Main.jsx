@@ -1,14 +1,14 @@
 import React, { useContext } from 'react';
 import SessionContext from '../../context/SessionContext';
 import Login from '../Login/Login';
-import Chat from '../Chat';
+import ChatPage from '../ChatPage';
 
 function Main() {
   const { username } = useContext(SessionContext);
 
   return (
     <div>
-      {username ? <Chat /> : <Login />}
+      {username ? <ChatPage /> : <Login />}
     </div>
   );
 }

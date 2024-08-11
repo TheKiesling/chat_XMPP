@@ -14,12 +14,19 @@ const Chat = ({ messages }) => {
     return (
         <div className={styles.container}>
             <div className={styles.messages}>
-                {messages.map((msg, index) => (
-                    <Message key={index} message={msg} />
-                ))}
+                {messages.length === 0 ? (
+                    <div className={styles.welcomeMessage}>
+                        <h2>Bienvenido al Chat</h2>
+                        <p>Empieza una conversación enviando un mensaje.</p>
+                    </div>
+                ) : (
+                    messages.map((msg, index) => (
+                        <Message key={index} message={msg} />
+                    ))
+                )}
                 <div ref={messagesEndRef} />
             </div>
-            <ChatInput />
+            <ChatInput disabled={messages.length === 0} />
         </div>
     )
 }
@@ -31,6 +38,10 @@ Chat.propTypes = {
             body: PropTypes.string.isRequired
         })
     ).isRequired
+}
+
+Chat.defaultProps = {
+    messages: []
 }
 
 export default Chat
