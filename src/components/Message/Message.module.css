@@ -1,0 +1,47 @@
+.message {
+    max-width: 70%;
+    padding: 12px 16px;
+    margin: 8px 0;
+    border-radius: 20px;
+    font-size: 14px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15); 
+    position: relative;
+    font-weight: 600;
+}
+
+.me {
+    background-color: #7EA8D9;
+    align-self: flex-end;
+    text-align: right;
+    margin-left: auto;
+    color: white;
+}
+
+.me::after {
+    content: "";
+    position: absolute;
+    right: -10px;
+    top: 10px;
+    border-width: 10px;
+    border-style: solid;
+    border-color: #7EA8D9 transparent transparent transparent;
+}
+
+.other {
+    background-color: #DADADA;
+    align-self: flex-start;
+    text-align: left;
+    margin-right: auto;
+}
+
+.other::after {
+    content: "";
+    position: absolute;
+    left: -10px;
+    top: 10px;
+    border-width: 10px;
+    border-style: solid;
+    border-color: #DADADA transparent transparent transparent;
+}

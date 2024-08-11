@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import styles from './Login.module.css'
 import LoginForm from '../../forms/LoginForm'
 import Button from '../../components/Button'
+import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
 
 const Login = () => {
     const [showLoginForm, setShowLoginForm] = useState(true);
