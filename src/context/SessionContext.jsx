@@ -78,17 +78,16 @@ function SessionProvider({ children }) {
             setUsername(null);
             localStorage.removeItem('username');
             localStorage.removeItem('resource');
-            localStorage.setItem('logout', Date.now()); // Trigger storage event
+            localStorage.setItem('logout', Date.now()); 
         } else {
-            // Ensure other tabs also handle logout
             setXmppClient(null);
             setUsername(null);
             localStorage.removeItem('username');
             localStorage.removeItem('resource');
-            localStorage.setItem('logout', Date.now()); // Trigger storage event
+            localStorage.setItem('logout', Date.now());
         }
     };
-
+    
     const data = {
         xmppClient,
         username,
