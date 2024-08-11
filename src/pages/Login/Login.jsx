@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import styles from './Login.module.css'
 import LoginForm from '../../forms/LoginForm'
+import SignupForm from '../../forms/SignupForm'
 import Button from '../../components/Button'
 
 const Login = () => {
@@ -32,6 +33,7 @@ const Login = () => {
                 />
             </div>
             {showLoginForm && <LoginForm />}
+            {showSignupForm && <SignupForm />}
         </div>
     )
 
