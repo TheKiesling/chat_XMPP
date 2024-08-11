@@ -1,42 +1,41 @@
-html, body{
+html, body {
     margin: 0;
     padding: 0;
     font-family: 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
-.container{
+.container {
     display: flex;
     flex-direction: column;
-    margin-bottom: 20px;
 }
 
-.label{
+.label {
     font-size: 14px;
     font-weight: 500;
     color: #DADADA;
     margin-bottom: 5px;
 }
 
-.input{
+.input {
     font-size: 16px;
     padding: 15px;
     border: 1px solid #303030;
     color: #303030;
     border-radius: 10px;
-    margin-top: 5px;
     background-color: #DADADA;
     font-family: 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    flex: 1; 
+    height: 100%; 
 }
 
-.error{
+.error {
     color: #F4989E;
     border: 3px solid #F4989E;
 }
 
-.errorMessage{
+.errorMessage {
     font-size: 14px;
     font-weight: 700;
     color: #F4989E;
     margin-top: 5px;
 }
-

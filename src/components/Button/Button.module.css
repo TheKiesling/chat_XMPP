@@ -9,8 +9,10 @@
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
-    margin: 4px 2px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .button:hover:not(:disabled) {
@@ -31,4 +33,9 @@
 .secondary:not(:disabled) {
     color: #303030;
     background-color: #DADADA;
+}
+
+.icon {
+    display: inline-flex;
+    align-items: center;
 }
