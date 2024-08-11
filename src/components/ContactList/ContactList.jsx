@@ -6,13 +6,37 @@ import Contact from '../Contact/Contact'
 const ContactList = ({ contacts }) => {
     return (
         <div className={styles.contactList}>
-            {contacts.map(contact => (
-                <Contact key={contact.username} username={contact.username} lastMessage={contact.lastMessage} />
-            ))}
+            {contacts.length === 0 ? (
+                <div className={styles.noContacts}>
+                    <p>No contacts available. Add some friends!</p>
+                </div>
+            ) : (
+                contacts.map(contact => (
+                    <Contact key={contact.username.name} username={contact.username} lastMessage={contact.lastMessage} />
+                ))
+            )}
         </div>
     )
 }
 
-ContactList.propTypes = {}
+ContactList.propTypes = {
+    contacts: PropTypes.arrayOf(
+        PropTypes.shape({
+            username: PropTypes.shape({
+                name: PropTypes.string.isRequired,
+                state: PropTypes.oneOf(['available', 'absent', 'notAvailable', 'busy', 'away']).isRequired,
+            }).isRequired,
+            lastMessage: PropTypes.shape({
+                from: PropTypes.string.isRequired,
+                content: PropTypes.string.isRequired,
+                date: PropTypes.string.isRequired,
+            }),
+        })
+    ).isRequired
+}
+
+ContactList.defaultProps = {
+    contacts: []
+}
 
 export default ContactList
