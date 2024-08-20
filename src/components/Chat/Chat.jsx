@@ -1,10 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import styles from './Chat.module.css';
+import ContactInfo from '../ContactInfo';
 import Message from '../Message/Message';
 import ChatInput from '../ChatInput/ChatInput';
 
-const Chat = ({ messages, onSendMessage }) => {
+const Chat = ({ messages, onSendMessage, contact }) => {
     const messagesEndRef = useRef(null);
 
     useEffect(() => {
@@ -13,6 +14,9 @@ const Chat = ({ messages, onSendMessage }) => {
 
     return (
         <div className={styles.container}>
+            <div className={styles.contactInfo}>
+                <ContactInfo contact={contact} />
+            </div>
             <div className={styles.messages}>
                 {messages.length === 0 ? (
                     <div className={styles.welcomeMessage}>
