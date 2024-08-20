@@ -2,9 +2,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  height: 100%;
+  justify-content: flex-start;
+  width: 100%;
   text-align: center;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .noContacts {

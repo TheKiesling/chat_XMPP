@@ -1,17 +1,21 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import styles from './Contact.module.css'
-import ProfilePhoto from '../ProfilePhoto'
+import React, {useContext} from 'react';
+import PropTypes from 'prop-types';
+import styles from './Contact.module.css';
+import ProfilePhoto from '../ProfilePhoto';
+import SessionContext from '../../context/SessionContext';
 
-const Contact = ({ username, lastMessage }) => {
-    const usernameState = username.state
-    const usernameInitial = username.name[0]
-    const emisor = lastMessage && lastMessage.from === username.name ? 'Me: ' : ''
-    const message = lastMessage ? lastMessage.content : ''
-    const messageDate = lastMessage ? lastMessage.date : ''
+const Contact = ({ username, lastMessage, onClick }) => {
+
+    const { username: session } = useContext(SessionContext);
+
+    const usernameState = username.state;
+    const usernameInitial = username.name[0].toUpperCase();
+    const emisor = lastMessage && lastMessage.sender === session ? <b>me:&nbsp;</b> : '';
+    const message = lastMessage ? lastMessage.content : '';
+    const messageDate = lastMessage ? lastMessage.date.split('T')[0] : '';
 
     return (
-        <div className={styles.contact}>
+        <div className={styles.contact} onClick={onClick}>
             <ProfilePhoto initial={usernameInitial} state={usernameState} />
             <div className={styles.info}>
                 <div className={styles.topRow}>
@@ -24,8 +28,8 @@ const Contact = ({ username, lastMessage }) => {
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
 Contact.propTypes = {
     username: PropTypes.shape({
@@ -37,14 +41,16 @@ Contact.propTypes = {
         content: PropTypes.string.isRequired,
         date: PropTypes.string.isRequired,
     }),
-}
+    onClick: PropTypes.func.isRequired,
+};
 
 Contact.defaultProps = {
     username: {
         name: 'John Doe',
         state: 'available',
     },
-    lastMessage: null
-}
+    lastMessage: null,
+    onClick: () => {},
+};
 
-export default Contact
+export default Contact;
