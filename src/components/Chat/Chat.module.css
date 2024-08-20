@@ -3,10 +3,23 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    width: 100%;
     height: calc(100vh - 151px);
+    background-color: aqua;
   }
   
-  .messages {
+  .contactInfo {
+    flex: 1;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    background-color: #1a1a1a; /* Asegúrate de que el fondo sea consistente */
+  }
+
+  .messages {    
+      flex: 3;
       display: flex;
       flex-direction: column;
       gap: 10px;

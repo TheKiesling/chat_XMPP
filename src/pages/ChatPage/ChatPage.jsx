@@ -22,6 +22,8 @@ const ChatPage = () => {
         ? conversations.find(conv => conv.contacto === selectedContact)?.messages || []
         : [];
 
+    const contact = conversations.find(conv => conv.contacto === selectedContact) || null;
+
     const handleSendMessage = (body) => {
         const to = `${selectedContact}@${domain}`;
         sendMessage(to, body);
@@ -35,7 +37,7 @@ const ChatPage = () => {
                     <ContactList contacts={conversations} onSelectContact={handleSelectContact} />
                 </div>
                 <div className={styles.chatContainer}>
-                    <Chat messages={messages} onSendMessage={handleSendMessage} />
+                    {contact && <Chat messages={messages} onSendMessage={handleSendMessage} contact={contact} />}
                 </div>
             </div>
         </div>
