@@ -1,10 +1,14 @@
-import React from 'react'
+import React, {useContext} from 'react'
 import PropTypes from 'prop-types'
 import styles from './Message.module.css'
+import SessionContext from '../../context/SessionContext';
 
 const Message = ({ message }) => {
-    const emisorClass = message.sender === 'me' ? styles.me : styles.other;
-    const content = message.body;
+
+    const { username } = useContext(SessionContext);
+
+    const emisorClass = message.sender === username ? styles.me : styles.other;
+    const content = message.content;
     return (
         <div className={`${styles.message} ${emisorClass}`}>
             <p>{content}</p>
@@ -15,7 +19,7 @@ const Message = ({ message }) => {
 Message.propTypes = {
     message: PropTypes.shape({
         sender: PropTypes.string.isRequired,
-        body: PropTypes.string.isRequired
+        content: PropTypes.string.isRequired
     }).isRequired
 }
 

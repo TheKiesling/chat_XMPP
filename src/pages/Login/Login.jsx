@@ -3,7 +3,6 @@ import styles from './Login.module.css'
 import LoginForm from '../../forms/LoginForm'
 import SignupForm from '../../forms/SignupForm'
 import Button from '../../components/Button'
-import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
 
 const Login = () => {
     const [showLoginForm, setShowLoginForm] = useState(true);

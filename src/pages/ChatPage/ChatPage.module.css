@@ -1,7 +1,7 @@
 .container {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 100%;
     background-color: #2c2c2c;
     width: 100%;
 }
@@ -11,22 +11,43 @@
     justify-content: space-between;
     align-items: flex-start;
     width: 100%;
-    height: calc(100% - 60px); /* Ajusta la altura para dejar espacio para el header */
+    height: 100%;
     padding: 20px;
     box-sizing: border-box;
 }
 
 .contactList {
     flex: 1;
-    max-width: 300px;
-    height: 100%;
     overflow-y: auto;
     margin-right: 20px;
+    height: calc(100vh - 151px);
 }
 
 .chatContainer {
     flex: 3;
     display: flex;
     flex-direction: column;
-    height: 100%;
 }
+
+.contactList::-webkit-scrollbar {
+    width: 12px;
+  }
+  
+  .contactList::-webkit-scrollbar-track {
+    background: #2c2c2c;
+    border-radius: 10px;
+  }
+  
+  .contactList::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 10px;
+    border: 3px solid #2c2c2c;
+  }
+  
+  .contactList::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+  }
+  
+  .contactList::-webkit-scrollbar-thumb:active {
+    background-color: #555;
+  }

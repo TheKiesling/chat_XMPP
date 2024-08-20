@@ -1,42 +1,55 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import styles from './ContactList.module.css'
-import Contact from '../Contact/Contact'
+import React from 'react';
+import PropTypes from 'prop-types';
+import styles from './ContactList.module.css';
+import Contact from '../Contact/Contact';
 
-const ContactList = ({ contacts }) => {
+const ContactList = ({ contacts, onSelectContact }) => {
+    const compareByDate = (a, b) => {
+        if (!a.ultimo_mensaje && !b.ultimo_mensaje) return 0;
+        if (!a.ultimo_mensaje) return 1;
+        if (!b.ultimo_mensaje) return -1;
+        return new Date(b.ultimo_mensaje.date) - new Date(a.ultimo_mensaje.date);
+    };
+
+    const sortedContacts = [...contacts].sort(compareByDate);
+
     return (
         <div className={styles.contactList}>
-            {contacts.length === 0 ? (
+            {sortedContacts.length === 0 ? (
                 <div className={styles.noContacts}>
                     <p>No contacts available. Add some friends!</p>
                 </div>
             ) : (
-                contacts.map(contact => (
-                    <Contact key={contact.username.name} username={contact.username} lastMessage={contact.lastMessage} />
+                sortedContacts.map(contact => (
+                    <Contact
+                        key={contact.contacto}
+                        username={{ name: contact.contacto, state: contact.estado }}
+                        lastMessage={contact.ultimo_mensaje}
+                        onClick={() => onSelectContact(contact.contacto)}
+                    />
                 ))
             )}
         </div>
-    )
-}
+    );
+};
 
 ContactList.propTypes = {
     contacts: PropTypes.arrayOf(
         PropTypes.shape({
-            username: PropTypes.shape({
-                name: PropTypes.string.isRequired,
-                state: PropTypes.oneOf(['available', 'absent', 'notAvailable', 'busy', 'away']).isRequired,
-            }).isRequired,
-            lastMessage: PropTypes.shape({
-                from: PropTypes.string.isRequired,
-                content: PropTypes.string.isRequired,
-                date: PropTypes.string.isRequired,
+            contacto: PropTypes.string.isRequired,
+            estado: PropTypes.string,
+            ultimo_mensaje: PropTypes.shape({
+                from: PropTypes.string,
+                content: PropTypes.string,
+                date: PropTypes.string,
             }),
         })
-    ).isRequired
-}
+    ).isRequired,
+    onSelectContact: PropTypes.func.isRequired,
+};
 
 ContactList.defaultProps = {
     contacts: []
-}
+};
 
-export default ContactList
+export default ContactList;

@@ -1,10 +1,10 @@
-import React, { useEffect, useRef } from 'react'
-import PropTypes from 'prop-types'
-import styles from './Chat.module.css'
-import Message from '../Message/Message'
-import ChatInput from '../ChatInput/ChatInput'
+import React, { useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
+import styles from './Chat.module.css';
+import Message from '../Message/Message';
+import ChatInput from '../ChatInput/ChatInput';
 
-const Chat = ({ messages }) => {
+const Chat = ({ messages, onSendMessage }) => {
     const messagesEndRef = useRef(null);
 
     useEffect(() => {
@@ -26,10 +26,10 @@ const Chat = ({ messages }) => {
                 )}
                 <div ref={messagesEndRef} />
             </div>
-            <ChatInput disabled={messages.length === 0} />
+            <ChatInput disabled={messages.length === 0} onSendMessage={onSendMessage} />
         </div>
-    )
-}
+    );
+};
 
 Chat.propTypes = {
     messages: PropTypes.arrayOf(
@@ -37,11 +37,12 @@ Chat.propTypes = {
             sender: PropTypes.string.isRequired,
             body: PropTypes.string.isRequired
         })
-    ).isRequired
-}
+    ).isRequired,
+    onSendMessage: PropTypes.func.isRequired
+};
 
 Chat.defaultProps = {
     messages: []
-}
+};
 
-export default Chat
+export default Chat;

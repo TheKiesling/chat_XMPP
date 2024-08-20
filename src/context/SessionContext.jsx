@@ -10,29 +10,34 @@ const SessionContext = createContext();
 function SessionProvider({ children }) {
     const [xmppClient, setXmppClient] = useState(null);
     const [username, setUsername] = useState(localStorage.getItem('username') || null);
+    const [password, setPassword] = useState(localStorage.getItem('password') || null); 
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
 
+
     useEffect(() => {
+        logout();
+        if (username && password) {
+            login({ username, password });
+        }
+
         const handleStorageChange = (event) => {
             if (event.key === 'logout') {
                 setXmppClient(null);
                 setUsername(null);
                 localStorage.removeItem('username');
                 localStorage.removeItem('resource');
+                localStorage.removeItem('password'); 
             }
         };
 
         window.addEventListener('storage', handleStorageChange);
-
-        return () => {
-            window.removeEventListener('storage', handleStorageChange);
-        };
+        
     }, []);
 
     const login = async ({ username, password }) => {
         setLoading(true);
-        const resource = 'login';
+        const resource = 'example';
         const xmpp = client({
             service,
             domain,
@@ -47,11 +52,12 @@ function SessionProvider({ children }) {
             setLoading(false);
         });
 
-        xmpp.on('online', async (address) => {
-            console.log(`Online as ${address}`);
+        xmpp.on('online', async (address) => {  
             setUsername(username);
+            setPassword(password);  // Consider security implications
             localStorage.setItem('username', username);
             localStorage.setItem('resource', resource);
+            localStorage.setItem('password', password);  // Consider security implications
             setLoading(false);
             await xmpp.send(xml('presence'));
         });
@@ -72,20 +78,21 @@ function SessionProvider({ children }) {
 
     const logout = async () => {
         if (xmppClient) {
-            await xmppClient.send(xml('presence', { type: 'unavailable' }));
-            await xmppClient.stop();
-            setXmppClient(null);
-            setUsername(null);
-            localStorage.removeItem('username');
-            localStorage.removeItem('resource');
-            localStorage.setItem('logout', Date.now()); 
-        } else {
-            setXmppClient(null);
-            setUsername(null);
-            localStorage.removeItem('username');
-            localStorage.removeItem('resource');
-            localStorage.setItem('logout', Date.now());
+            try {
+                await xmppClient.send(xml('presence', { type: 'unavailable' }));
+                await xmppClient.stop();
+            } catch (err) {
+                console.error('Error stopping xmppClient:', err);
+            }
         }
+        setXmppClient(null);
+        setUsername(null);
+        setPassword(null);
+        localStorage.removeItem('username');
+        localStorage.removeItem('resource');
+        localStorage.removeItem('password');
+        localStorage.setItem('logout', Date.now()); 
+        setLoading(false);
     };
     
     const data = {
