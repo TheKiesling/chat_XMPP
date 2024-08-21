@@ -1,0 +1,8 @@
+.userList {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    text-align: center;
+    overflow-x: hidden;
+    overflow-y: auto;
+}

@@ -7,10 +7,6 @@ const ContactInfo = ({contact}) => {
 
     const { contacto, estado } = contact;
 
-    useEffect(() => {
-        console.log(contacto);
-    }, [contacto]);
-
     const initial = contacto[0]?.toUpperCase();
     const messageStatus = 'Hello, I am using XMPP.';
 

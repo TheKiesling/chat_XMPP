@@ -7,7 +7,8 @@ import ContactList from '../../components/ContactList';
 import useGetMessages from '../../hooks/useGetMessages';
 import useSendMessage from '../../hooks/useSendMessage';
 import { domain } from '../../config';
-import NavBar from '../../components/NavBar';
+import NavBar from '../../components/Navbar';
+import UserList from '../../components/UserList';
 
 const ChatPage = () => {
     const { username } = useContext(SessionContext);
@@ -42,6 +43,11 @@ const ChatPage = () => {
         sendMessage(to, body);
     }
 
+    useEffect(() => {
+        console.log('userSelected', isUserSelected);
+        console.log('forumSelected', isForumSelected);
+    }, [isUserSelected, isForumSelected]);
+
     return (
         <div className={styles.container}>
             <Header username={username} />
@@ -50,6 +56,7 @@ const ChatPage = () => {
                     <NavBar onForumSelect={handleForumSelect} onUserSelect={handleUserSelect} />
                 </div>
                 <div className={styles.contactList}>
+                    {isUserSelected && <UserList />}
                     {isForumSelected &&<ContactList contacts={conversations} onSelectContact={handleSelectContact} /> }
                 </div>
                 <div className={styles.chatContainer}>
