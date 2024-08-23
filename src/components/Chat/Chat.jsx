@@ -30,7 +30,7 @@ const Chat = ({ messages, onSendMessage, contact }) => {
                 )}
                 <div ref={messagesEndRef} />
             </div>
-            <ChatInput disabled={messages.length === 0} onSendMessage={onSendMessage} />
+            <ChatInput onSendMessage={onSendMessage} />
         </div>
     );
 };

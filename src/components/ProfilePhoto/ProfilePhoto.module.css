@@ -52,29 +52,8 @@
     right: 0px;
 }
 
-.busy {
-    width: 25px;
-    height: 25px;
-    background-color: #F44336;
-    border-radius: 50%;
-    border: 2px solid white;
-    position: absolute;
-    bottom: 0px;
-    right: 0px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
 
-.busy::before {
-    content: '';
-    width: 15px;
-    height: 2px;
-    background-color: white;
-    position: absolute;
-}
-
-.away {
+.unavailable {
     width: 25px;
     height: 25px;
     background-color: /* gray */ #9E9E9E;

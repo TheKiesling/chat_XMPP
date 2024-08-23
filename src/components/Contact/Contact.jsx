@@ -45,10 +45,6 @@ Contact.propTypes = {
 };
 
 Contact.defaultProps = {
-    username: {
-        name: 'John Doe',
-        state: 'available',
-    },
     lastMessage: null,
     onClick: () => {},
 };

@@ -30,7 +30,7 @@ UserList.defaultProps = {
     users: [
         {
             name: 'John Doe',
-            state: 'available',
+            state: '',
         },
         {
             name: 'Jane Doe',
