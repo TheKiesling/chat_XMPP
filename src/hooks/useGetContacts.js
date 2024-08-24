@@ -7,7 +7,6 @@ const useGetContacts = () => {
     const [contacts, setContacts] = useState([]);
     const [loading, setLoading] = useState(true);
 
-
     useEffect(() => {
         if (!xmppClient) {
             console.error('xmppClient is not initialized');
@@ -36,14 +35,29 @@ const useGetContacts = () => {
                 const estado = stanza.attrs.type || 'unavailable';
                 const messageStatus = stanza.getChildText('status') || '';
 
-                setContacts(prevContacts => {
-                    return prevContacts.map(contact => {
-                        if (contact.contacto === fromJid) {
-                            return { ...contact, estado, messageStatus };
-                        }
-                        return contact;
+                if (estado === 'unsubscribed') {
+                    // Eliminar el contacto si se desuscribe
+                    setContacts(prevContacts => {
+                        return prevContacts.filter(contact => contact.contacto !== fromJid);
                     });
-                });
+                } else {
+                    setContacts(prevContacts => {
+                        return prevContacts.map(contact => {
+                            if (contact.contacto === fromJid) {
+                                return { ...contact, estado, messageStatus };
+                            }
+                            return contact;
+                        });
+                    });
+
+                    if (estado === 'subscribed') {
+                        const from = stanza.attrs.from.split('/')[0];
+                        console.log(`Contact request accepted by: ${from}`);
+                        setContacts(prevContacts => {
+                            return [...prevContacts, { contacto: from.split('@')[0], estado: '', messageStatus: '' }];
+                        });
+                    }
+                }
             }
         };
 

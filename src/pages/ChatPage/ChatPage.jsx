@@ -75,19 +75,8 @@ const ChatPage = () => {
         ultimo_mensaje: user.ultimo_mensaje || ''
     }));
 
-    const contactsInfo = contacts.map(contact => ({
-        contacto: contact.contacto,
-        estado: contact.estado,
-        messageStatus: contact.messageStatus,
-        messages: contact.messages,
-        ultimo_mensaje: contact.ultimo_mensaje
-    }));
 
     const usersAndContacts = [...contactsList, ...usersInfo];
-
-    useEffect(() => {
-        console.log('usersAndContacts', usersAndContacts);
-    }, [usersAndContacts]);
 
     const contact = usersAndContacts.find(contact => contact.contacto === selectedContact);
 
@@ -95,11 +84,6 @@ const ChatPage = () => {
         const to = `${selectedContact}@${domain}`;
         sendMessage(to, body);
     }
-
-    useEffect(() => {
-        console.log('conversation', conversations);
-        console.log('contactsList', contactsList);
-    }, [conversations]);
 
     return (
         <div className={styles.container}>
