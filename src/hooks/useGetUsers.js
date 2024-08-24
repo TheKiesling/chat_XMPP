@@ -2,12 +2,11 @@ import { useState, useEffect, useContext } from 'react';
 import { xml } from '@xmpp/client';
 import SessionContext from '../context/SessionContext';
 
-const useGetUsers = () => {
+const useGetUsers = (filter = '*') => {
     const { xmppClient } = useContext(SessionContext);
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
 
     useEffect(() => {
         if (!xmppClient) {
@@ -53,14 +52,23 @@ const useGetUsers = () => {
             try {
                 const searchRequest = xml(
                     'iq',
-                    { type: 'set', id: 'search', to: 'search.alumchat.lol' },
+                    { type: 'set', id: 'search1', to: 'search.alumchat.lol' },
                     xml('query', { xmlns: 'jabber:iq:search' },
                         xml('x', { xmlns: 'jabber:x:data', type: 'submit' },
                             xml('field', { var: 'FORM_TYPE', type: 'hidden' },
                                 xml('value', {}, 'jabber:iq:search')
                             ),
-                            xml('field', { var: 'jid' }, 
-                                xml('value', {}, '*') 
+                            xml('field', { var: 'search' }, 
+                                xml('value', {}, filter) 
+                            ),
+                            xml('field', { var: 'Username', type: 'boolean' },
+                                xml('value', {}, '1')
+                            ),
+                            xml('field', { var: 'Name', type: 'boolean' },
+                                xml('value', {}, '1')
+                            ),
+                            xml('field', { var: 'Email', type: 'boolean' },
+                                xml('value', {}, '1')
                             )
                         )
                     )
@@ -80,7 +88,7 @@ const useGetUsers = () => {
         return () => {
             xmppClient.off('stanza', handleUsers);
         };
-    }, [xmppClient]);
+    }, [xmppClient, filter]);
 
     return { users, loading, error };
 };

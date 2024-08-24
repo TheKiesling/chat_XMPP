@@ -18,7 +18,7 @@ ProfilePhoto.propTypes = {
 
 ProfilePhoto.defaultProps = {
     initial: 'A',
-    state: 'available',
+    state: 'unavailable',
 }
 
 export default ProfilePhoto

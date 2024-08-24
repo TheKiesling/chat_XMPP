@@ -5,16 +5,17 @@ import ProfilePhoto from '../ProfilePhoto';
 import Button from '../Button';
 import { Add } from '@mui/icons-material';
 
-const User = ({ user }) => {
+const User = ({ user, onClick }) => {
 
     const userState = user.state;
-    const usernameInitial = user.name[0].toUpperCase();
+    const usernameInitial = user.jid[0]?.toUpperCase();
+    const userJID = user.jid;
 
     return (
-        <div className={styles.user} >
+        <div className={styles.user} onClick={onClick}>
             <ProfilePhoto initial={usernameInitial} state={userState} />
             <div className={styles.info}>
-                <div className={styles.username}>{user.name}</div>
+                <div className={styles.username}>{userJID.split('@')[0]}</div>
                 <Button icon={<Add />} />
             </div>
         </div>
@@ -23,15 +24,15 @@ const User = ({ user }) => {
 
 User.propTypes = {
     user: PropTypes.shape({
-        name: PropTypes.string.isRequired,
+        jid: PropTypes.string.isRequired,
         state: PropTypes.oneOf(['available', 'absent', 'notAvailable', 'busy', 'away']).isRequired,
     }),
 };
 
 User.defaultProps = {
     user: {
-        name: 'John Doe',
-        state: 'away',
+        jid: 'John Doe',
+        state: 'unavailable',
     },
 };
 

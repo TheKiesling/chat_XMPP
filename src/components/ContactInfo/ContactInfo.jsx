@@ -32,7 +32,7 @@ ContactInfo.propTypes = {
 ContactInfo.defaultProps = {
     contact: {
         name: 'John Doe',
-        estado: 'available',
+        estado: 'unavailable',
         messageStatus: 'Hello, I am using XMPP.',
     },
 }

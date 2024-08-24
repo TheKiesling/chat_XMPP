@@ -23,6 +23,9 @@ const ChatPage = () => {
     const { contacts } = useGetContacts();
     const { users } = useGetUsers();
 
+    const usersWithoutContacts = users.filter(user => !contacts.find(contact => contact.contacto === user.jid.split('@')[0]));
+
+
     const contactsList = contacts.map(contact => {
         const conversation = conversations.find(conv => conv.contacto === contact.contacto);
         return {
@@ -32,15 +35,21 @@ const ChatPage = () => {
         };
     });
 
+    const usersList = usersWithoutContacts.map(user => {
+        const conversation = conversations.find(conv => conv.contacto === user.jid.split('@')[0]);
+        if (conversation?.messages) {
+            return {
+                contacto: user.jid.split('@')[0],
+                messages: conversation.messages,
+                ultimo_mensaje: conversation.messages[conversation.messages.length - 1] || null,
+            };
+        }
+        return null;
+    }).filter(user => user !== null);
+
     const handleSelectContact = (contact) => {
         setSelectedContact(contact);
     };
-
-    useEffect(() => {
-        console.log('users', contacts);
-        console.log('conversations', conversations);
-        console.log('contactsList', contactsList);
-    }, [contacts, contactsList, conversations]);
 
     const handleForumSelect = () => {
         setIsForumSelected(true);
@@ -56,14 +65,41 @@ const ChatPage = () => {
         ? conversations.find(conv => conv.contacto === selectedContact)?.messages || []
         : [];
 
-    const combinedContacts = [...contactsList];
+    const combinedContacts = [...contactsList, ...usersList];   
 
-    const contact = combinedContacts.find(contact => contact.contacto === selectedContact);
+    const usersInfo = usersWithoutContacts.map(user => ({
+        contacto: user.jid.split('@')[0],
+        estado: user.state || 'unavailable',
+        messageStatus: user.messageStatus,
+        messages: user.messages || [],
+        ultimo_mensaje: user.ultimo_mensaje || ''
+    }));
+
+    const contactsInfo = contacts.map(contact => ({
+        contacto: contact.contacto,
+        estado: contact.estado,
+        messageStatus: contact.messageStatus,
+        messages: contact.messages,
+        ultimo_mensaje: contact.ultimo_mensaje
+    }));
+
+    const usersAndContacts = [...contactsList, ...usersInfo];
+
+    useEffect(() => {
+        console.log('usersAndContacts', usersAndContacts);
+    }, [usersAndContacts]);
+
+    const contact = usersAndContacts.find(contact => contact.contacto === selectedContact);
 
     const handleSendMessage = (body) => {
         const to = `${selectedContact}@${domain}`;
         sendMessage(to, body);
     }
+
+    useEffect(() => {
+        console.log('conversation', conversations);
+        console.log('contactsList', contactsList);
+    }, [conversations]);
 
     return (
         <div className={styles.container}>
@@ -73,7 +109,7 @@ const ChatPage = () => {
                     <Navbar onForumSelect={handleForumSelect} onUserSelect={handleUserSelect} />
                 </div>
                 <div className={styles.contactList}>
-                    {isUserSelected && <UserList users={users} />}
+                    {isUserSelected && <UserList users={usersWithoutContacts} onSelectContact={handleSelectContact}/>}
                     {isForumSelected &&<ContactList contacts={combinedContacts} onSelectContact={handleSelectContact} /> }
                 </div>
                 <div className={styles.chatContainer}>

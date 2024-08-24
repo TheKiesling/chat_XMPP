@@ -56,7 +56,7 @@ const useGetMessages = () => {
         const handlePresence = (stanza) => {
             if (stanza.is('presence')) {
                 const fromJid = stanza.attrs.from.split('/')[0].split('@')[0];
-                const estado = stanza.attrs.type || 'available';
+                const estado = stanza.attrs.type || 'unavailable';
                 const messageStatus = stanza.getChildText('status') || '';
 
                 setConversations(prevConversations => {

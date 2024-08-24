@@ -18,7 +18,7 @@ function SessionProvider({ children }) {
     useEffect(() => {
         async function fetchData() {
             if (xmppClient) {
-                await xmppClient.stop();
+
                 xmppClient.removeAllListeners();
             }
     
@@ -60,7 +60,7 @@ function SessionProvider({ children }) {
         });
 
         xmpp.on('offline', async () => {
-            await xmpp.send(xml('presence', { type: 'unavailable' })); 
+            await xmpp.send(xml('presence', { type: 'available' })); 
             await xmpp.stop();
         });
 
