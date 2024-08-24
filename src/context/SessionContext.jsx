@@ -16,24 +16,18 @@ function SessionProvider({ children }) {
 
 
     useEffect(() => {
-        logout();
-        if (username && password) {
-            login({ username, password });
-        }
-
-        const handleStorageChange = (event) => {
-            if (event.key === 'logout') {
-                setXmppClient(null);
-                setUsername(null);
-                localStorage.removeItem('username');
-                localStorage.removeItem('resource');
-                localStorage.removeItem('password'); 
+        async function fetchData() {
+            if (xmppClient) {
+                await xmppClient.removeAllListeners();
+                await logout();
             }
-        };
-
-        window.addEventListener('storage', handleStorageChange);
-        
-    }, []);
+            if (username && password) {
+                await login({ username, password });
+            }
+        }
+        fetchData();
+    }, []); 
+    
 
     const login = async ({ username, password }) => {
         setLoading(true);
@@ -52,18 +46,20 @@ function SessionProvider({ children }) {
             setLoading(false);
         });
 
-        xmpp.on('online', async (address) => {  
+        xmpp.on('online', async () => {
+ 
             setUsername(username);
-            setPassword(password);  // Consider security implications
+            setPassword(password);
             localStorage.setItem('username', username);
             localStorage.setItem('resource', resource);
-            localStorage.setItem('password', password);  // Consider security implications
-            setLoading(false);
+            localStorage.setItem('password', password); 
             await xmpp.send(xml('presence'));
+            setLoading(false);
         });
 
-        xmpp.on('offline', () => {
-            console.log('Offline');
+        xmpp.on('offline', async () => {
+            await xmpp.send(xml('presence', { type: 'available' })); 
+            await xmpp.stop();
         });
 
         try {
@@ -77,14 +73,11 @@ function SessionProvider({ children }) {
     };
 
     const logout = async () => {
-        if (xmppClient) {
-            try {
-                await xmppClient.send(xml('presence', { type: 'unavailable' }));
-                await xmppClient.stop();
-            } catch (err) {
-                console.error('Error stopping xmppClient:', err);
-            }
-        }
+        xmppClient?.on('on', async () => {
+            await xmppClient.send(xml('presence', { type: 'unavailable' }));
+            await xmppClient.stop();
+            await xmppClient.removeAllListeners();
+        });
         setXmppClient(null);
         setUsername(null);
         setPassword(null);

@@ -8,7 +8,7 @@ const ContactInfo = ({contact}) => {
     const { contacto, estado } = contact;
 
     const initial = contacto[0]?.toUpperCase();
-    const messageStatus = 'Hello, I am using XMPP.';
+    const messageStatus = contact.messageStatus;
 
   return (
     <div className={styles.contactInfo}>
@@ -23,18 +23,11 @@ const ContactInfo = ({contact}) => {
 
 ContactInfo.propTypes = {
     contact: PropTypes.shape({
-        name: PropTypes.string.isRequired,
-        state: PropTypes.oneOf(['available', 'absent', 'notAvailable', 'busy', 'away']).isRequired,
+        contacto: PropTypes.string.isRequired,
+        estado: PropTypes.oneOf(['available', 'absent', 'notAvailable', 'busy', 'away']).isRequired,
         messageStatus: PropTypes.string.isRequired,
     }).isRequired,
 }
 
-ContactInfo.defaultProps = {
-    contact: {
-        name: 'John Doe',
-        state: 'available',
-        messageStatus: 'Hello, I am using XMPP.',
-    },
-}
 
 export default ContactInfo

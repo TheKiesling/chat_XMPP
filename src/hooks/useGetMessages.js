@@ -20,17 +20,17 @@ const useGetMessages = () => {
                 const to = stanza.attrs.to;
                 const body = stanza.getChildText('body');
                 const date = stanza.attrs.date || new Date().toISOString();
-        
+
                 if (body) {
                     const fromUsername = from.split('/')[0].split('@')[0];
                     const toUsername = to.split('/')[0].split('@')[0];
                     const contact = fromUsername === username ? toUsername : fromUsername;
                     const newMessage = { sender: fromUsername, content: body, date };
-        
+
                     updateConversations(contact, newMessage);
                 }
             }
-        
+
             if (stanza.is('iq') && stanza.getChild('fin', 'urn:xmpp:mam:2')) {
                 console.log('Finished receiving archived messages.');
                 setLoading(false);
@@ -47,13 +47,37 @@ const useGetMessages = () => {
                     const toUsername = to.split('/')[0].split('@')[0];
                     const contact = fromUsername === username ? toUsername : fromUsername;
                     const archivedMessage = { sender: fromUsername, content: body, date };
-        
+
                     updateConversations(contact, archivedMessage);
                 }
             }
         };
-         
+
+        const handlePresence = (stanza) => {
+            if (stanza.is('presence')) {
+                const fromJid = stanza.attrs.from.split('/')[0].split('@')[0];
+                const estado = stanza.attrs.type || 'unavailable';
+                const messageStatus = stanza.getChildText('status') || '';
+
+                setConversations(prevConversations => {
+                    const conversationExists = prevConversations.some(conv => conv.contacto === fromJid);
+
+                    if (conversationExists) {
+                        return prevConversations.map(conv => {
+                            if (conv.contacto === fromJid) {
+                                return { ...conv, estado, messageStatus };
+                            }
+                            return conv;
+                        });
+                    } else {
+                        return [...prevConversations, { contacto: fromJid, estado, messageStatus, messages: [] }];
+                    }
+                });
+            }
+        };
+
         xmppClient.on('stanza', handleStanza);
+        xmppClient.on('presence', handlePresence);
 
         const fetchArchivedMessages = async () => {
             const mamRequest = xml(
@@ -72,32 +96,37 @@ const useGetMessages = () => {
 
         fetchArchivedMessages();
 
-        return () => xmppClient.off('stanza', handleStanza);
+        return () => {
+            xmppClient.off('stanza', handleStanza);
+            xmppClient.off('presence', handlePresence);
+        }
     }, [xmppClient, username]);
 
     function updateConversations(contact, newMessage) {
         setConversations(prevConversations => {
-            const updatedConversations = prevConversations.map(conv => {
-                if (conv.contacto === contact) {
-                    return {
-                        ...conv,
-                        messages: [...conv.messages, newMessage],
-                        ultimo_mensaje: newMessage,
-                    };
-                }
-                return conv;
-            });
+            const conversationExists = prevConversations.some(conv => conv.contacto === contact);
 
-            if (!updatedConversations.some(conv => conv.contacto === contact)) {
-                updatedConversations.push({
-                    contacto: contact,
-                    estado: 'available',
-                    ultimo_mensaje: newMessage,
-                    messages: [newMessage],
+            if (conversationExists) {
+                return prevConversations.map(conv => {
+                    if (conv.contacto === contact) {
+                        return {
+                            ...conv,
+                            messages: [...conv.messages, newMessage],
+                        };
+                    }
+                    return conv;
                 });
+            } else {
+                return [
+                    ...prevConversations,
+                    {
+                        contacto: contact,
+                        messages: [newMessage],
+                        estado: contact.status,
+                        messageStatus: '',
+                    },
+                ];
             }
-
-            return updatedConversations;
         });
     }
 

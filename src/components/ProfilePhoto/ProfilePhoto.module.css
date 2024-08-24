@@ -30,10 +30,10 @@
     right: 0px;
 }
 
-.absent {
+.away {
     width: 25px;
     height: 25px;
-    background-color: /* yellow */ #FFC107;
+    background-color: #FFC107;
     border-radius: 50%;
     border: 2px solid white;
     position: absolute;
@@ -41,7 +41,7 @@
     right: 0px;
 }
 
-.notAvailable {
+.xa {
     width: 25px;
     height: 25px;
     background-color: #F44336;
@@ -52,7 +52,7 @@
     right: 0px;
 }
 
-.busy {
+.dnd {
     width: 25px;
     height: 25px;
     background-color: #F44336;
@@ -66,7 +66,7 @@
     justify-content: center;
 }
 
-.busy::before {
+.dnd::before {
     content: '';
     width: 15px;
     height: 2px;
@@ -74,10 +74,10 @@
     position: absolute;
 }
 
-.away {
+.unavailable {
     width: 25px;
     height: 25px;
-    background-color: /* gray */ #9E9E9E;
+    background-color:  #9E9E9E;
     border-radius: 50%;
     border: 2px solid white;
     position: absolute;

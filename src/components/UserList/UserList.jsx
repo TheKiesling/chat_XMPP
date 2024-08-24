@@ -3,14 +3,15 @@ import PropTypes from 'prop-types';
 import styles from './UserList.module.css';
 import User from '../User/User';
 
-const UserList = ({ users }) => {
+const UserList = ({ users, onSelectContact }) => {
 
     return (
         <div className={styles.userList}>
             {users.map(user => (
                 <User
-                    key={user.name}
+                    key={user.jid.split('@')[0]}
                     user={user}
+                    onClick={() => onSelectContact(user.jid.split('@')[0])} 
                 />
             ))}
         </div>
@@ -26,17 +27,5 @@ UserList.propTypes = {
     ).isRequired,
 };
 
-UserList.defaultProps = {
-    users: [
-        {
-            name: 'John Doe',
-            state: 'available',
-        },
-        {
-            name: 'Jane Doe',
-            state: 'busy',
-        },
-    ],
-};
 
 export default UserList;
