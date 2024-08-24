@@ -26,3 +26,7 @@
     background-color: #2c2c2c;
     transform: scale(1.05);
 }
+
+.navBar .icon:last-child {
+    margin-top: auto;
+}

@@ -1,0 +1,68 @@
+.configuration {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  background-color: #303030;
+  padding: 20px;
+  height: calc(100vh - 191px);
+  font-family: 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.userInfo{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    color: #DADADA;
+    font-size: 14px;
+}
+
+.status{
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.select{
+    font-size: 16px;
+    padding: 15px;
+    border: 1px solid #303030;
+    color: #303030;
+    border-radius: 10px;
+    background-color: #DADADA;
+    font-family: 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    width: 100%;
+}
+
+.notifications{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.notifications::-webkit-scrollbar {
+    width: 12px;
+  }
+  
+  .notifications::-webkit-scrollbar-track {
+    background: #2c2c2c;
+    border-radius: 10px;
+  }
+  
+  .notifications::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 10px;
+    border: 3px solid #2c2c2c;
+  }
+  
+  .notifications::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+  }
+  
+  .notifications::-webkit-scrollbar-thumb:active {
+    background-color: #555;
+  }
+
