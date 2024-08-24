@@ -18,15 +18,13 @@ function SessionProvider({ children }) {
     useEffect(() => {
         async function fetchData() {
             if (xmppClient) {
-
-                xmppClient.removeAllListeners();
+                await xmppClient.removeAllListeners();
+                await logout();
             }
-    
             if (username && password) {
                 await login({ username, password });
             }
         }
-    
         fetchData();
     }, []); 
     
@@ -78,6 +76,7 @@ function SessionProvider({ children }) {
         xmppClient?.on('on', async () => {
             await xmppClient.send(xml('presence', { type: 'unavailable' }));
             await xmppClient.stop();
+            await xmppClient.removeAllListeners();
         });
         setXmppClient(null);
         setUsername(null);

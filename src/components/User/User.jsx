@@ -36,11 +36,5 @@ User.propTypes = {
     }),
 };
 
-User.defaultProps = {
-    user: {
-        jid: 'John Doe',
-        state: 'unavailable',
-    },
-};
 
 export default User;

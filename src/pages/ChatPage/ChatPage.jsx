@@ -69,12 +69,16 @@ const ChatPage = () => {
 
     const usersInfo = usersWithoutContacts.map(user => ({
         contacto: user.jid.split('@')[0],
-        estado: user.state || 'unavailable',
+        estado: user.state,
         messageStatus: user.messageStatus,
         messages: user.messages || [],
         ultimo_mensaje: user.ultimo_mensaje || ''
     }));
 
+    useEffect(() => {
+        console.log('contactsList', contactsList);
+        console.log('usersInfo', usersInfo);
+    }, [contactsList, usersInfo]);
 
     const usersAndContacts = [...contactsList, ...usersInfo];
 

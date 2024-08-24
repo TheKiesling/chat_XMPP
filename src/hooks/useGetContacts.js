@@ -32,11 +32,10 @@ const useGetContacts = () => {
         const handlePresence = (stanza) => {
             if (stanza.is('presence')) {
                 const fromJid = stanza.attrs.from.split('/')[0].split('@')[0];
-                const estado = stanza.attrs.type || 'unavailable';
+                const estado = stanza.attrs.type || 'available';
                 const messageStatus = stanza.getChildText('status') || '';
 
                 if (estado === 'unsubscribed') {
-                    // Eliminar el contacto si se desuscribe
                     setContacts(prevContacts => {
                         return prevContacts.filter(contact => contact.contacto !== fromJid);
                     });
@@ -52,9 +51,12 @@ const useGetContacts = () => {
 
                     if (estado === 'subscribed') {
                         const from = stanza.attrs.from.split('/')[0];
-                        console.log(`Contact request accepted by: ${from}`);
                         setContacts(prevContacts => {
-                            return [...prevContacts, { contacto: from.split('@')[0], estado: '', messageStatus: '' }];
+                            return [...prevContacts, { 
+                                contacto: from.split('@')[0], 
+                                estado:  stanza.attrs.type || 'available',
+                                messageStatus: stanza.getChildText('status') || ''
+                            }];
                         });
                     }
                 }

@@ -16,9 +16,5 @@ ProfilePhoto.propTypes = {
     state: PropTypes.oneOf(['available', 'absent', 'notAvailable', 'busy', 'away']).isRequired,
 }
 
-ProfilePhoto.defaultProps = {
-    initial: 'A',
-    state: 'unavailable',
-}
 
 export default ProfilePhoto

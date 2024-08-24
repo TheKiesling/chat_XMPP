@@ -122,7 +122,7 @@ const useGetMessages = () => {
                     {
                         contacto: contact,
                         messages: [newMessage],
-                        estado: 'unavailable',
+                        estado: contact.status,
                         messageStatus: '',
                     },
                 ];

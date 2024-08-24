@@ -29,12 +29,5 @@ ContactInfo.propTypes = {
     }).isRequired,
 }
 
-ContactInfo.defaultProps = {
-    contact: {
-        name: 'John Doe',
-        estado: 'unavailable',
-        messageStatus: 'Hello, I am using XMPP.',
-    },
-}
 
 export default ContactInfo

@@ -27,17 +27,5 @@ UserList.propTypes = {
     ).isRequired,
 };
 
-UserList.defaultProps = {
-    users: [
-        {
-            name: 'John Doe',
-            state: '',
-        },
-        {
-            name: 'Jane Doe',
-            state: 'busy',
-        },
-    ],
-};
 
 export default UserList;

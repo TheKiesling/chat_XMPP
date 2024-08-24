@@ -34,7 +34,7 @@ const Contact = ({ username, lastMessage, onClick }) => {
 Contact.propTypes = {
     username: PropTypes.shape({
         name: PropTypes.string.isRequired,
-        state: PropTypes.oneOf(['available', 'absent', 'notAvailable', 'busy', 'away']).isRequired,
+        state: PropTypes.string,
     }),
     lastMessage: PropTypes.shape({
         from: PropTypes.string.isRequired,
