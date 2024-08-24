@@ -11,14 +11,17 @@ import Navbar from '../../components/Navbar';
 import UserList from '../../components/UserList';
 import useGetContacts from '../../hooks/useGetContacts';
 import useGetUsers from '../../hooks/useGetUsers';
+import Configuration from '../../components/Configuration';
 
 const ChatPage = () => {
     const { username } = useContext(SessionContext);
     const { conversations, updateConversations } = useGetMessages();
     const [selectedContact, setSelectedContact] = useState(null);
     const { sendMessage } = useSendMessage(updateConversations);
+
     const [isForumSelected, setIsForumSelected] = useState(true); 
     const [isUserSelected, setIsUserSelected] = useState(false);
+    const [isConfigurationSelected, setIsConfigurationSelected] = useState(false);
 
     const { contacts } = useGetContacts();
     const { users } = useGetUsers();
@@ -54,11 +57,19 @@ const ChatPage = () => {
     const handleForumSelect = () => {
         setIsForumSelected(true);
         setIsUserSelected(false);
+        setIsConfigurationSelected(false);
     };
 
     const handleUserSelect = () => {
         setIsUserSelected(true);
         setIsForumSelected(false);
+        setIsConfigurationSelected(false);
+    }
+
+    const handleConfigurationSelect = () => {
+        setIsConfigurationSelected(true);
+        setIsForumSelected(false);
+        setIsUserSelected(false);
     }
 
     const messages = selectedContact
@@ -94,11 +105,12 @@ const ChatPage = () => {
             <Header username={username} />
             <div className={styles.content}>
                 <div className={styles.navBar}>
-                    <Navbar onForumSelect={handleForumSelect} onUserSelect={handleUserSelect} />
+                    <Navbar onForumSelect={handleForumSelect} onUserSelect={handleUserSelect} onConfigurationSelect={handleConfigurationSelect} />
                 </div>
                 <div className={styles.contactList}>
                     {isUserSelected && <UserList users={usersWithoutContacts} onSelectContact={handleSelectContact}/>}
                     {isForumSelected &&<ContactList contacts={combinedContacts} onSelectContact={handleSelectContact} /> }
+                    {isConfigurationSelected && <Configuration contacts={contactsList} users={usersList} />}
                 </div>
                 <div className={styles.chatContainer}>
                     { contact && <Chat messages={messages} onSendMessage={handleSendMessage} contact={contact} />}
