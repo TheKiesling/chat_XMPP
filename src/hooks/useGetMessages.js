@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from 'react';
-import SessionContext from '../context/SessionContext';
+import { SessionContext } from '../context/SessionContext';
 import { xml } from '@xmpp/client';
 
 const useGetMessages = () => {
@@ -56,7 +56,7 @@ const useGetMessages = () => {
         const handlePresence = (stanza) => {
             if (stanza.is('presence')) {
                 const fromJid = stanza.attrs.from.split('/')[0].split('@')[0];
-                const estado = stanza.attrs.type || 'unavailable';
+                const estado = stanza.attrs.type;
                 const messageStatus = stanza.getChildText('status') || '';
 
                 setConversations(prevConversations => {

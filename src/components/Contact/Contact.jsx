@@ -2,7 +2,7 @@ import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
 import styles from './Contact.module.css';
 import ProfilePhoto from '../ProfilePhoto';
-import SessionContext from '../../context/SessionContext';
+import { SessionContext } from '../../context/SessionContext';
 
 const Contact = ({ username, lastMessage, onClick }) => {
 

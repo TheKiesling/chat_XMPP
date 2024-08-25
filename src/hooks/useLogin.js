@@ -1,10 +1,9 @@
 import { useContext } from 'react';
-import SessionContext from '../context/SessionContext';
+import { SessionContext } from '../context/SessionContext';  // Importa el miembro nombrado correctamente
 
 function useLogin() {
-    const { login, success, error, loading } = useContext(SessionContext);
-
-    return { login, success, error, loading };
+    const { login, error, loading } = useContext(SessionContext);
+    return { login, error, loading };
 }
 
 export default useLogin;

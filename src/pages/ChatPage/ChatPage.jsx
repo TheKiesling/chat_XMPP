@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import SessionContext from '../../context/SessionContext';
+import { SessionContext } from '../../context/SessionContext';
 import styles from './ChatPage.module.css';
 import Header from '../../components/Header';
 import Chat from '../../components/Chat';
@@ -14,7 +14,7 @@ import useGetUsers from '../../hooks/useGetUsers';
 import Configuration from '../../components/Configuration';
 
 const ChatPage = () => {
-    const { username } = useContext(SessionContext);
+    const { username, status, messageStatus } = useContext(SessionContext);
     const { conversations, updateConversations } = useGetMessages();
     const [selectedContact, setSelectedContact] = useState(null);
     const { sendMessage } = useSendMessage(updateConversations);
@@ -27,7 +27,6 @@ const ChatPage = () => {
     const { users } = useGetUsers();
 
     const usersWithoutContacts = users.filter(user => !contacts.find(contact => contact.contacto === user.jid.split('@')[0]));
-
 
     const contactsList = contacts.map(contact => {
         const conversation = conversations.find(conv => conv.contacto === contact.contacto);
@@ -72,6 +71,12 @@ const ChatPage = () => {
         setIsUserSelected(false);
     }
 
+    useEffect(() => {
+        console.log('status:', status);
+        console.log('messageStatus:', messageStatus);
+    }, [status, messageStatus]);
+
+
     const messages = selectedContact
         ? conversations.find(conv => conv.contacto === selectedContact)?.messages || []
         : [];
@@ -85,11 +90,6 @@ const ChatPage = () => {
         messages: user.messages || [],
         ultimo_mensaje: user.ultimo_mensaje || ''
     }));
-
-    useEffect(() => {
-        console.log('contactsList', contactsList);
-        console.log('usersInfo', usersInfo);
-    }, [contactsList, usersInfo]);
 
     const usersAndContacts = [...contactsList, ...usersInfo];
 
