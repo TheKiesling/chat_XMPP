@@ -6,9 +6,9 @@ import Input from '../Input/Input'
 import Notification from '../Notifications/Notification'
 import { SessionContext } from '../../context/SessionContext'
 
-const Configuration = ({ notifications, onDelete}) => {
+const Configuration = ({ notifications }) => {
 
-    const { status, messageStatus, updateStatus, updateMessageStatus } = useContext(SessionContext)
+    const { status, messageStatus, updateStatus, updateMessageStatus, deleteUser } = useContext(SessionContext)
 
     const [userStatus, setUserStatus] = useState(status)
     const [userMessageStatus, setUserMessageStatus] = useState(messageStatus)
@@ -43,7 +43,7 @@ const Configuration = ({ notifications, onDelete}) => {
                         disabled = {userStatus === 'unavailable'}
                     />
                 </div>
-                <Button onClick={onDelete} children="Delete Account" />
+                <Button onClick={deleteUser} children="Delete Account" />
             </div>
             <div className={styles.notifications}>
                 {

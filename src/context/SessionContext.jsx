@@ -16,6 +16,7 @@ function SessionProvider({ children }) {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
 
+    // Logout when the user closes the tab
     useEffect(() => {
         window.addEventListener('beforeunload', handleBeforeUnload);
         return () => {
@@ -23,19 +24,18 @@ function SessionProvider({ children }) {
         };
     }, []);
 
+    // Login when username, password and xmppClient are set
     useEffect(() => {
         if (username && password && !xmppClient) {
-            console.log("Attempting to reconnect with stored credentials");
             login({ username, password });
         } else {
-            console.log("Setting loading to false");
             setLoading(false);
         }
     }, [username, password, xmppClient]);
 
+    // Logout when the user closes the tab
     const handleBeforeUnload = async () => {
         if (xmppClient) {
-            console.log("Handling before unload");
             await logout();
         }
     };
@@ -49,7 +49,7 @@ function SessionProvider({ children }) {
             resource,
             username,
             password,
-        });
+        }); // Create a new XMPP client
 
         xmpp.on('error', (err) => {
             console.error('Error:', err);
@@ -57,6 +57,7 @@ function SessionProvider({ children }) {
             setLoading(false);
         });
 
+        // When the client is online, set the username and password and send a presence stanza
         xmpp.on('online', async () => {
             setUsername(username);
             setPassword(password);
@@ -69,6 +70,7 @@ function SessionProvider({ children }) {
             setLoading(false);
         });
 
+        // When the client is offline, logout
         xmpp.on('offline', async () => {
             logout();
         });
@@ -84,12 +86,13 @@ function SessionProvider({ children }) {
     };
 
     const logout = async () => {
-        if (xmppClient) {
+        if (xmppClient) { // If the client is connected, send an unavailable presence stanza and stop the client
             await xmppClient.send(xml('presence', { type: 'unavailable' }));
             await xmppClient.stop();
             xmppClient.removeAllListeners(); 
         }
     
+        // Reset the state and remove the username, resource, password, status and messageStatus from the local storage
         setXmppClient(null);
         setUsername(null);
         setPassword(null);
@@ -103,16 +106,44 @@ function SessionProvider({ children }) {
         setLoading(false);
     };
 
+    // Delete the user from the server
+    const deleteUser = async () => {
+        if (xmppClient) {
+            try {
+                const iq = xml(
+                    'iq',
+                    { type: 'set' },
+                    xml(
+                        'query',
+                        { xmlns: 'jabber:iq:register' },
+                        xml('remove')
+                    )
+                );
+    
+                await xmppClient.send(iq);
+                console.log('User deleted from server');
+    
+                await logout();
+            } catch (err) {
+                console.error('Error deleting user:', err);
+                setError(err);
+            }
+        }
+    };
+
+    // Update the status
     const updateStatus = (newStatus) => {
         setStatus(newStatus);
         localStorage.setItem('status', newStatus);
     };
 
+    // Update the message status
     const updateMessageStatus = (newMessageStatus) => {
         setMessageStatus(newMessageStatus);
         localStorage.setItem('messageStatus', newMessageStatus);
     };
 
+    // Send the presence stanza when the status changes
     useEffect(() => {
         if (status && xmppClient) {
             xmppClient.send(xml('presence', { type: status }));
@@ -122,6 +153,7 @@ function SessionProvider({ children }) {
         }
     } , [status, xmppClient]);
 
+    // Send the presence stanza when the message status changes
     useEffect(() => {
         if (xmppClient && status) {
             xmppClient.send(xml('presence', {type: status}, xml('status', {}, messageStatus)));
@@ -132,7 +164,6 @@ function SessionProvider({ children }) {
         localStorage.setItem('status', status);
         localStorage.setItem('messageStatus', messageStatus);
     }, [status, messageStatus]);
-    
 
     const data = {
         xmppClient,
@@ -142,6 +173,7 @@ function SessionProvider({ children }) {
         messageStatus,
         login,
         logout,
+        deleteUser,
         updateStatus,
         updateMessageStatus,
         error,
