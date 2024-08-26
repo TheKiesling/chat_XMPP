@@ -7,7 +7,6 @@ import LoadingPage from '../LoadingPage/LoadingPage';
 function Main() {
   const { username, loading } = useContext(SessionContext);
 
-
   if (loading) {
       return <LoadingPage />;
   }

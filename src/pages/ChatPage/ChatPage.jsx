@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState } from 'react';
 import { SessionContext } from '../../context/SessionContext';
 import styles from './ChatPage.module.css';
 import Header from '../../components/Header';
@@ -15,7 +15,8 @@ import Configuration from '../../components/Configuration';
 import useSendFile from '../../hooks/useSendFile';
 
 const ChatPage = () => {
-    const { username, status, messageStatus } = useContext(SessionContext);
+    const { username } = useContext(SessionContext);
+
     const { conversations, updateConversations } = useGetMessages();
     const [selectedContact, setSelectedContact] = useState(null);
     const { sendMessage } = useSendMessage(updateConversations);
@@ -28,9 +29,11 @@ const ChatPage = () => {
     const { contacts } = useGetContacts();
     const { users } = useGetUsers();
 
+    // Filter out the users that are not in the contacts list
     const usersWithoutContacts = users.filter(user => !contacts.find(contact => contact.contacto === user.jid.split('@')[0]));
 
-    const contactsList = contacts.map(contact => {
+    // Combine the contacts and users lists
+    const contactsList = contacts.map(contact => { // Add the messages and the last message to the contacts
         const conversation = conversations.find(conv => conv.contacto === contact.contacto);
         return {
             ...contact,
@@ -39,7 +42,7 @@ const ChatPage = () => {
         };
     });
 
-    const usersList = usersWithoutContacts.map(user => {
+    const usersList = usersWithoutContacts.map(user => { // Add the messages and the last message to the users
         const conversation = conversations.find(conv => conv.contacto === user.jid.split('@')[0]);
         if (conversation?.messages) {
             return {
@@ -50,6 +53,8 @@ const ChatPage = () => {
         }
         return null;
     }).filter(user => user !== null);
+
+    const combinedContacts = [...contactsList, ...usersList];   
 
     const handleSelectContact = (contact) => {
         setSelectedContact(contact);
@@ -73,13 +78,12 @@ const ChatPage = () => {
         setIsUserSelected(false);
     }
 
-
+    // Get the messages of the selected contact
     const messages = selectedContact
         ? conversations.find(conv => conv.contacto === selectedContact)?.messages || []
         : [];
 
-    const combinedContacts = [...contactsList, ...usersList];   
-
+    // Get the users that are not in the contacts list
     const usersInfo = usersWithoutContacts.map(user => ({
         contacto: user.jid.split('@')[0],
         estado: user.state,

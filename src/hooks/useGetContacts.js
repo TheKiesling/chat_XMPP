@@ -3,7 +3,7 @@ import { xml } from '@xmpp/client';
 import { SessionContext } from '../context/SessionContext';
 
 const useGetContacts = () => {
-    const { xmppClient, username, status } = useContext(SessionContext);
+    const { xmppClient, username } = useContext(SessionContext);
     const [contacts, setContacts] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -12,16 +12,17 @@ const useGetContacts = () => {
             return;
         }
 
+        // Roster handling => Get the contacts
         const handleRoster = (stanza) => {
             if (stanza.is('iq') && stanza.attrs.type === 'result') {
                 const query = stanza.getChild('query', 'jabber:iq:roster');
                 if (query) {
-                    const items = query.getChildren('item');
+                    const items = query.getChildren('item'); // Get the roster items (contacts)
                     setContacts(prevContacts => {
-                        // Crear un mapa de contactos existentes para fácil acceso
+                        // Create a map of contacts for easier processing
                         const contactMap = new Map(prevContacts.map(contact => [contact.contacto, contact]));
         
-                        // Procesar cada item del roster
+                        // Update the map with the new contacts
                         items.forEach(item => {
                             const jid = item.attrs.jid.split('@')[0];
                             const existingContact = contactMap.get(jid);
@@ -36,7 +37,7 @@ const useGetContacts = () => {
                             }
                         });
         
-                        // Convierte el mapa de vuelta a un arreglo para actualizar el estado
+                        // Return the updated contacts array
                         return Array.from(contactMap.values());
                     });
                     setLoading(false);
@@ -44,29 +45,30 @@ const useGetContacts = () => {
             }
         };
         
-
+        // Presence handling => Update the contacts with their presence status
         const handlePresence = (stanza) => {
             if (stanza.is('presence')) {
+                // Extract the contact's JID, username, presence status, and message status
                 const fromFullJid = stanza.attrs.from;
                 const fromBareJid = fromFullJid.split('/')[0];
                 const fromUser = fromBareJid.split('@')[0];
                 const estado = stanza.attrs.type || 'available'; 
                 const messageStatus = stanza.getChildText('status') || '';
         
-                // Manejo de contactos no suscritos
+                // Update the contact's presence status
                 if (estado === 'unsubscribed') {
                     setContacts(prevContacts => prevContacts.filter(contact => contact.contacto !== fromUser));
                 } else {
-                    // Actualiza o añade el contacto dependiendo si ya existe
+                    // Update the contact's presence status
                     setContacts(prevContacts => {
                         const existingContactIndex = prevContacts.findIndex(contact => contact.contacto === fromUser);
                         if (existingContactIndex > -1) {
-                            // Actualiza contacto existente
+                            // Update the existing contact
                             const updatedContacts = [...prevContacts];
                             updatedContacts[existingContactIndex] = { ...updatedContacts[existingContactIndex], estado, messageStatus };
                             return updatedContacts;
                         } else {
-                            // Añade nuevo contacto si es 'subscribed'
+                            // Add the new contact if it's subscribed, available, or unavailable
                             if (estado === 'subscribed' || estado === 'available' || estado === 'unavailable') {
                                 return [...prevContacts, { contacto: fromUser, estado, messageStatus }];
                             }
@@ -83,6 +85,9 @@ const useGetContacts = () => {
         xmppClient.on('stanza', handlePresence);
 
         const fetchContacts = async () => {
+            // The id attribute is used to match the response with the request
+            // The query element is used to request the roster
+            // The xmlns attribute indicates that we want to get the roster
             const rosterRequest = xml(
                 'iq',
                 { type: 'get', id: 'roster' },

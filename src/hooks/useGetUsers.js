@@ -8,25 +8,28 @@ const useGetUsers = (filter = '*') => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    // Fetch the users that match the filter.
     useEffect(() => {
         if (!xmppClient) {
-            console.error('xmppClient is not initialized');
-            setError('XMPP Client not initialized');
-            setLoading(false);
             return;
         }
 
+        // Handle the response to the search request.
         const handleUsers = (stanza) => {
-            if (stanza.is('iq') && stanza.attrs.type === 'result') {
+            if (stanza.is('iq') && stanza.attrs.type === 'result') { // Check if the stanza is an IQ result.
+                // Extract the users from the search result.
                 const query = stanza.getChild('query', 'jabber:iq:search');
-                if (query) {
+                if (query) { // Check if the stanza contains a search query.
+                    // Extract the users from the search result.
                     const x = query.getChild('x', 'jabber:x:data');
                     const items = x.getChildren('item');
 
+                    // Map the users to a more readable format.
                     const usersList = items.map(item => {
                         const fields = item.getChildren('field');
                         let user = {};
 
+                        // Extract the user's JID, name, and email.
                         fields.forEach(field => {
                             const varAttr = field.attrs.var;
                             const value = field.getChildText('value');
@@ -48,8 +51,12 @@ const useGetUsers = (filter = '*') => {
 
         xmppClient.on('stanza', handleUsers);
 
+        // Send the search request to the server.
         const fetchUsers = async () => {
             try {
+                // The iq stanza to request the users that match the filter.
+                // The search request is sent to the search service.
+                // The search service is a component that allows searching for users in the XMPP server.
                 const searchRequest = xml(
                     'iq',
                     { type: 'set', id: 'search1', to: 'search.alumchat.lol' },
@@ -58,8 +65,8 @@ const useGetUsers = (filter = '*') => {
                             xml('field', { var: 'FORM_TYPE', type: 'hidden' },
                                 xml('value', {}, 'jabber:iq:search')
                             ),
-                            xml('field', { var: 'search' }, 
-                                xml('value', {}, filter) 
+                            xml('field', { var: 'search' },  // The search field with the filter value.
+                                xml('value', {}, filter) // The filter value to search for users.
                             ),
                             xml('field', { var: 'Username', type: 'boolean' },
                                 xml('value', {}, '1')
