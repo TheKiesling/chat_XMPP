@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import SessionContext from '../context/SessionContext';
+import { SessionContext } from '../context/SessionContext';
 
 function useLogout() {
     const { logout, success, error, loading } = useContext(SessionContext);

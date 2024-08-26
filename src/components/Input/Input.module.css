@@ -40,3 +40,8 @@ html, body {
     color: #F4989E;
     margin-top: 5px;
 }
+
+.input:disabled {
+    background-color: #A0A0A0;
+    cursor: not-allowed;
+}

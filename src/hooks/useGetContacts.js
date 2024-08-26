@@ -1,15 +1,14 @@
 import { useState, useEffect, useContext } from 'react';
 import { xml } from '@xmpp/client';
-import SessionContext from '../context/SessionContext';
+import { SessionContext } from '../context/SessionContext';
 
 const useGetContacts = () => {
-    const { xmppClient, username } = useContext(SessionContext);
+    const { xmppClient, username, status } = useContext(SessionContext);
     const [contacts, setContacts] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (!xmppClient) {
-            console.error('xmppClient is not initialized');
             return;
         }
 
@@ -18,50 +17,67 @@ const useGetContacts = () => {
                 const query = stanza.getChild('query', 'jabber:iq:roster');
                 if (query) {
                     const items = query.getChildren('item');
-                    const contactsList = items.map(item => ({
-                        contacto: item.attrs.jid.split('@')[0], 
-                        estado: '',
-                        messageStatus: ''
-                    }));
-                    setContacts(contactsList);
+                    setContacts(prevContacts => {
+                        // Crear un mapa de contactos existentes para fácil acceso
+                        const contactMap = new Map(prevContacts.map(contact => [contact.contacto, contact]));
+        
+                        // Procesar cada item del roster
+                        items.forEach(item => {
+                            const jid = item.attrs.jid.split('@')[0];
+                            const existingContact = contactMap.get(jid);
+                            if (existingContact) {
+                                existingContact.contacto = jid;
+                            } else {
+                                contactMap.set(jid, {
+                                    contacto: jid,
+                                    estado: item.attrs.type || 'unavailable',
+                                    messageStatus: item.getChildText('status') || '',
+                                });
+                            }
+                        });
+        
+                        // Convierte el mapa de vuelta a un arreglo para actualizar el estado
+                        return Array.from(contactMap.values());
+                    });
                     setLoading(false);
                 }
             }
         };
+        
 
         const handlePresence = (stanza) => {
             if (stanza.is('presence')) {
-                const fromJid = stanza.attrs.from.split('/')[0].split('@')[0];
-                const estado = stanza.attrs.type || 'available';
+                const fromFullJid = stanza.attrs.from;
+                const fromBareJid = fromFullJid.split('/')[0];
+                const fromUser = fromBareJid.split('@')[0];
+                const estado = stanza.attrs.type || 'available'; 
                 const messageStatus = stanza.getChildText('status') || '';
-
+        
+                // Manejo de contactos no suscritos
                 if (estado === 'unsubscribed') {
-                    setContacts(prevContacts => {
-                        return prevContacts.filter(contact => contact.contacto !== fromJid);
-                    });
+                    setContacts(prevContacts => prevContacts.filter(contact => contact.contacto !== fromUser));
                 } else {
+                    // Actualiza o añade el contacto dependiendo si ya existe
                     setContacts(prevContacts => {
-                        return prevContacts.map(contact => {
-                            if (contact.contacto === fromJid) {
-                                return { ...contact, estado, messageStatus };
+                        const existingContactIndex = prevContacts.findIndex(contact => contact.contacto === fromUser);
+                        if (existingContactIndex > -1) {
+                            // Actualiza contacto existente
+                            const updatedContacts = [...prevContacts];
+                            updatedContacts[existingContactIndex] = { ...updatedContacts[existingContactIndex], estado, messageStatus };
+                            return updatedContacts;
+                        } else {
+                            // Añade nuevo contacto si es 'subscribed'
+                            if (estado === 'subscribed' || estado === 'available' || estado === 'unavailable') {
+                                return [...prevContacts, { contacto: fromUser, estado, messageStatus }];
                             }
-                            return contact;
-                        });
+                            return prevContacts;
+                        }
                     });
 
-                    if (estado === 'subscribed') {
-                        const from = stanza.attrs.from.split('/')[0];
-                        setContacts(prevContacts => {
-                            return [...prevContacts, { 
-                                contacto: from.split('@')[0], 
-                                estado:  stanza.attrs.type || 'available',
-                                messageStatus: stanza.getChildText('status') || ''
-                            }];
-                        });
-                    }
                 }
             }
-        };
+        };        
+
 
         xmppClient.on('stanza', handleRoster);
         xmppClient.on('stanza', handlePresence);

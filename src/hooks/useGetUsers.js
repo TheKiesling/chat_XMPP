@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { xml } from '@xmpp/client';
-import SessionContext from '../context/SessionContext';
+import { SessionContext } from '../context/SessionContext';
 
 const useGetUsers = (filter = '*') => {
     const { xmppClient } = useContext(SessionContext);
@@ -74,7 +74,6 @@ const useGetUsers = (filter = '*') => {
                     )
                 );
 
-                console.log("Enviando búsqueda de usuarios:", searchRequest.toString());
                 await xmppClient.send(searchRequest);
             } catch (err) {
                 console.error("Error al enviar la solicitud de búsqueda:", err);

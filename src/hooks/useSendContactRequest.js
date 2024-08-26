@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { xml } from '@xmpp/client';
-import SessionContext from '../context/SessionContext';
+import { SessionContext } from '../context/SessionContext';
 
 const useSendContactRequest = () => {
     const { xmppClient } = useContext(SessionContext);

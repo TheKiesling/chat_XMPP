@@ -1,11 +1,19 @@
-import React, {useState} from 'react'
+import React, {useState, useContext} from 'react'
 import PropTypes from 'prop-types'
 import styles from './Configuration.module.css'
 import Button from '../Button/Button'
 import Input from '../Input/Input'
 import Notification from '../Notifications/Notification'
+import { SessionContext } from '../../context/SessionContext'
 
-const Configuration = ({status, messageStatus, notifications, onDelete}) => {
+const Configuration = ({ notifications, onDelete}) => {
+
+    const { status, messageStatus, updateStatus, updateMessageStatus } = useContext(SessionContext)
+
+    const [userStatus, setUserStatus] = useState(status)
+    const [userMessageStatus, setUserMessageStatus] = useState(messageStatus)
+
+
     return (
         <div className={styles.configuration}>
             <div className={styles.userInfo}>
@@ -13,8 +21,11 @@ const Configuration = ({status, messageStatus, notifications, onDelete}) => {
                     <span>Status</span>
                     <select
                         className={styles.select}
-                        value={status}
-                        onChange={() => {}}
+                        value={userStatus}
+                        onChange={(e) => {
+                            setUserStatus(e.target.value)
+                            updateStatus(e.target.value)
+                        }}
                     >
                         <option value="available">Available</option>
                         <option value="unavailable">Unavailable</option>
@@ -24,8 +35,12 @@ const Configuration = ({status, messageStatus, notifications, onDelete}) => {
                     <Input 
                         id="message"
                         label="Message"
-                        value={messageStatus}
-                        onChange={() => {}}
+                        value={userMessageStatus}
+                        onChange={(e) => {
+                            setUserMessageStatus(e.target.value)
+                            updateMessageStatus(e.target.value)
+                        }}
+                        disabled = {userStatus === 'unavailable'}
                     />
                 </div>
                 <Button onClick={onDelete} children="Delete Account" />

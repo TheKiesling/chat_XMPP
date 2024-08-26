@@ -1,7 +1,7 @@
 import React, {useContext} from 'react'
 import PropTypes from 'prop-types'
 import styles from './Message.module.css'
-import SessionContext from '../../context/SessionContext';
+import { SessionContext } from '../../context/SessionContext';
 
 const Message = ({ message }) => {
 

@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import SessionContext from '../../context/SessionContext';
+import { SessionContext } from '../../context/SessionContext';
 import styles from './ChatPage.module.css';
 import Header from '../../components/Header';
 import Chat from '../../components/Chat';
@@ -12,12 +12,14 @@ import UserList from '../../components/UserList';
 import useGetContacts from '../../hooks/useGetContacts';
 import useGetUsers from '../../hooks/useGetUsers';
 import Configuration from '../../components/Configuration';
+import useSendFile from '../../hooks/useSendFile';
 
 const ChatPage = () => {
-    const { username } = useContext(SessionContext);
+    const { username, status, messageStatus } = useContext(SessionContext);
     const { conversations, updateConversations } = useGetMessages();
     const [selectedContact, setSelectedContact] = useState(null);
     const { sendMessage } = useSendMessage(updateConversations);
+    const { sendFile } = useSendFile(updateConversations);
 
     const [isForumSelected, setIsForumSelected] = useState(true); 
     const [isUserSelected, setIsUserSelected] = useState(false);
@@ -27,7 +29,6 @@ const ChatPage = () => {
     const { users } = useGetUsers();
 
     const usersWithoutContacts = users.filter(user => !contacts.find(contact => contact.contacto === user.jid.split('@')[0]));
-
 
     const contactsList = contacts.map(contact => {
         const conversation = conversations.find(conv => conv.contacto === contact.contacto);
@@ -72,6 +73,7 @@ const ChatPage = () => {
         setIsUserSelected(false);
     }
 
+
     const messages = selectedContact
         ? conversations.find(conv => conv.contacto === selectedContact)?.messages || []
         : [];
@@ -86,11 +88,6 @@ const ChatPage = () => {
         ultimo_mensaje: user.ultimo_mensaje || ''
     }));
 
-    useEffect(() => {
-        console.log('contactsList', contactsList);
-        console.log('usersInfo', usersInfo);
-    }, [contactsList, usersInfo]);
-
     const usersAndContacts = [...contactsList, ...usersInfo];
 
     const contact = usersAndContacts.find(contact => contact.contacto === selectedContact);
@@ -98,6 +95,11 @@ const ChatPage = () => {
     const handleSendMessage = (body) => {
         const to = `${selectedContact}@${domain}`;
         sendMessage(to, body);
+    }
+
+    const handleSendFile = (file) => {
+        const to = `${selectedContact}@${domain}`;
+        sendFile(to, file);
     }
 
     return (
@@ -113,7 +115,7 @@ const ChatPage = () => {
                     {isConfigurationSelected && <Configuration contacts={contactsList} users={usersList} />}
                 </div>
                 <div className={styles.chatContainer}>
-                    { contact && <Chat messages={messages} onSendMessage={handleSendMessage} contact={contact} />}
+                    { contact && <Chat messages={messages} onSendMessage={handleSendMessage} contact={contact} onSendFile={handleSendFile} />}
                 </div>
             </div>
         </div>
