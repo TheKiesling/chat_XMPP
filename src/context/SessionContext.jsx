@@ -114,7 +114,6 @@ function SessionProvider({ children }) {
     };
 
     useEffect(() => {
-        console.log('messageStatus:', messageStatus);
         if (status && xmppClient) {
             xmppClient.send(xml('presence', { type: status }));
         }

@@ -12,12 +12,14 @@ import UserList from '../../components/UserList';
 import useGetContacts from '../../hooks/useGetContacts';
 import useGetUsers from '../../hooks/useGetUsers';
 import Configuration from '../../components/Configuration';
+import useSendFile from '../../hooks/useSendFile';
 
 const ChatPage = () => {
     const { username, status, messageStatus } = useContext(SessionContext);
     const { conversations, updateConversations } = useGetMessages();
     const [selectedContact, setSelectedContact] = useState(null);
     const { sendMessage } = useSendMessage(updateConversations);
+    const { sendFile } = useSendFile(updateConversations);
 
     const [isForumSelected, setIsForumSelected] = useState(true); 
     const [isUserSelected, setIsUserSelected] = useState(false);
@@ -71,11 +73,6 @@ const ChatPage = () => {
         setIsUserSelected(false);
     }
 
-    useEffect(() => {
-        console.log('status:', status);
-        console.log('messageStatus:', messageStatus);
-    }, [status, messageStatus]);
-
 
     const messages = selectedContact
         ? conversations.find(conv => conv.contacto === selectedContact)?.messages || []
@@ -100,6 +97,11 @@ const ChatPage = () => {
         sendMessage(to, body);
     }
 
+    const handleSendFile = (file) => {
+        const to = `${selectedContact}@${domain}`;
+        sendFile(to, file);
+    }
+
     return (
         <div className={styles.container}>
             <Header username={username} />
@@ -113,7 +115,7 @@ const ChatPage = () => {
                     {isConfigurationSelected && <Configuration contacts={contactsList} users={usersList} />}
                 </div>
                 <div className={styles.chatContainer}>
-                    { contact && <Chat messages={messages} onSendMessage={handleSendMessage} contact={contact} />}
+                    { contact && <Chat messages={messages} onSendMessage={handleSendMessage} contact={contact} onSendFile={handleSendFile} />}
                 </div>
             </div>
         </div>

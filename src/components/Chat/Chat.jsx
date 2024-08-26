@@ -5,7 +5,7 @@ import ContactInfo from '../ContactInfo';
 import Message from '../Message/Message';
 import ChatInput from '../ChatInput/ChatInput';
 
-const Chat = ({ messages, onSendMessage, contact }) => {
+const Chat = ({ messages, onSendMessage, contact, onSendFile }) => {
     const messagesEndRef = useRef(null);
 
     useEffect(() => {
@@ -30,7 +30,7 @@ const Chat = ({ messages, onSendMessage, contact }) => {
                 )}
                 <div ref={messagesEndRef} />
             </div>
-            <ChatInput onSendMessage={onSendMessage} />
+            <ChatInput onSendMessage={onSendMessage} onSendFile={onSendFile} />
         </div>
     );
 };
