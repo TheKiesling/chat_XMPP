@@ -51,7 +51,6 @@ const Configuration = ({ notifications }) => {
                         <Notification 
                             key={notification.user} 
                             user={notification.user} 
-                            message={notification.message} 
                             onAccept={notification.onAccept} 
                         />
                     ))

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { SessionContext } from '../../context/SessionContext';
 import styles from './ChatPage.module.css';
 import Header from '../../components/Header';
@@ -13,18 +13,40 @@ import useGetContacts from '../../hooks/useGetContacts';
 import useGetUsers from '../../hooks/useGetUsers';
 import Configuration from '../../components/Configuration';
 import useSendFile from '../../hooks/useSendFile';
+import useGetContactRequest from '../../hooks/useGetContactRequest';
+import useGetGroups from '../../hooks/useGetGroups';
+import GroupList from '../../components/GroupList';
+import useJoinGroup from '../../hooks/useJoinGroup';
 
 const ChatPage = () => {
     const { username } = useContext(SessionContext);
 
-    const { conversations, updateConversations } = useGetMessages();
+    const { conversations, updateConversations, getGroupMessages } = useGetMessages();
     const [selectedContact, setSelectedContact] = useState(null);
     const { sendMessage } = useSendMessage(updateConversations);
     const { sendFile } = useSendFile(updateConversations);
+    const { contactRequests } = useGetContactRequest();
+    const { groups } = useGetGroups();
+    const { joinGroupChat } = useJoinGroup();
+
+    const [notifications, setNotifications] = useState([]);
+
+    useEffect(() => {
+        if (contactRequests.length > 0) {
+            setNotifications(contactRequests.map(request => ({
+                user: request.jid,
+                onAccept: () => {
+                    console.log('Accepting contact request from', request.jid);
+                }
+            })));
+        }
+    }, [contactRequests]);
 
     const [isForumSelected, setIsForumSelected] = useState(true); 
     const [isUserSelected, setIsUserSelected] = useState(false);
     const [isConfigurationSelected, setIsConfigurationSelected] = useState(false);
+    const [isGroupSelected, setIsGroupSelected] = useState(false);
+    const [messageToGroup, setMessageToGroup] = useState(false);
 
     const { contacts } = useGetContacts();
     const { users } = useGetUsers();
@@ -54,26 +76,68 @@ const ChatPage = () => {
         return null;
     }).filter(user => user !== null);
 
-    const combinedContacts = [...contactsList, ...usersList];   
+    const groupsList = groups.map(group => {
+        const conversation = conversations.find(conv => conv.contacto === group.jid);
+        if (conversation?.messages) {
+            return {
+                contacto: group.jid,
+                messages: conversation.messages,
+                ultimo_mensaje: conversation.messages[conversation.messages.length - 1] || null,
+            };
+        }
+        return null;
+    }).filter(group => group !== null);
+
+    const combinedContacts = [...contactsList, ...usersList, ...groupsList];   
 
     const handleSelectContact = (contact) => {
         setSelectedContact(contact);
+        if (groups.find(group => group.jid.split('@')[0] === contact)) {
+            setMessageToGroup(true);
+        } else {
+            setMessageToGroup(false);
+        }
     };
+
+    useEffect(() => {
+        console.log('Selected contact:', selectedContact);
+    }, [selectedContact]);
+
+
+    const handleSelectGroup = (groupJid) => {
+        joinGroupChat(groupJid);
+        setSelectedContact(groupJid);
+        setMessageToGroup(true);
+    };
+
+    useEffect(() => {
+        console.log('messageToGroup:', messageToGroup, 'selectedContact:', selectedContact);
+    }, [messageToGroup, selectedContact]);
 
     const handleForumSelect = () => {
         setIsForumSelected(true);
         setIsUserSelected(false);
         setIsConfigurationSelected(false);
+        setIsGroupSelected(false);
     };
 
     const handleUserSelect = () => {
         setIsUserSelected(true);
         setIsForumSelected(false);
         setIsConfigurationSelected(false);
+        setIsGroupSelected(false);
     }
 
     const handleConfigurationSelect = () => {
         setIsConfigurationSelected(true);
+        setIsForumSelected(false);
+        setIsUserSelected(false);
+        setIsGroupSelected(false);
+    }
+
+    const handleGroupSelect = () => {
+        setIsGroupSelected(true);
+        setIsConfigurationSelected(false);
         setIsForumSelected(false);
         setIsUserSelected(false);
     }
@@ -97,12 +161,12 @@ const ChatPage = () => {
     const contact = usersAndContacts.find(contact => contact.contacto === selectedContact);
 
     const handleSendMessage = (body) => {
-        const to = `${selectedContact}@${domain}`;
+        const to = messageToGroup ? `${selectedContact}@conference.${domain}` : `${selectedContact}@${domain}`;
         sendMessage(to, body);
     }
 
     const handleSendFile = (file) => {
-        const to = `${selectedContact}@${domain}`;
+        const to = messageToGroup ? `${selectedContact}@conference.${domain}` : `${selectedContact}@${domain}`;
         sendFile(to, file);
     }
 
@@ -111,12 +175,13 @@ const ChatPage = () => {
             <Header username={username} />
             <div className={styles.content}>
                 <div className={styles.navBar}>
-                    <Navbar onForumSelect={handleForumSelect} onUserSelect={handleUserSelect} onConfigurationSelect={handleConfigurationSelect} />
+                    <Navbar onForumSelect={handleForumSelect} onUserSelect={handleUserSelect} onConfigurationSelect={handleConfigurationSelect} onGroupSelect={handleGroupSelect} />
                 </div>
                 <div className={styles.contactList}>
                     {isUserSelected && <UserList users={usersWithoutContacts} onSelectContact={handleSelectContact}/>}
                     {isForumSelected &&<ContactList contacts={combinedContacts} onSelectContact={handleSelectContact} /> }
-                    {isConfigurationSelected && <Configuration contacts={contactsList} users={usersList} />}
+                    {isGroupSelected && <GroupList groups={groups} onSelectGroup={handleSelectGroup} />}
+                    {isConfigurationSelected && <Configuration contacts={contactsList} users={usersList} notifications={notifications} />}
                 </div>
                 <div className={styles.chatContainer}>
                     { contact && <Chat messages={messages} onSendMessage={handleSendMessage} contact={contact} onSendFile={handleSendFile} />}
