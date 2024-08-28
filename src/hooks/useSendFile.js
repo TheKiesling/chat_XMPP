@@ -7,6 +7,9 @@ const useSendFile = (updateConversations) => {
 
     const sendFile = async (to, file) => {
 
+        // Determine if the message is for a group based on the JID
+        const isGroupMessage = to.includes('@conference.');
+
         // Define the handler for the server response
         const handleStanza = async (stanza) => {
             if (stanza.is("iq") && stanza.attrs.id === 'upload-request') {
@@ -25,7 +28,7 @@ const useSendFile = (updateConversations) => {
                 // Create the message stanza with the file URL
                 const fileMessage = xml(
                     'message',
-                    { type: 'chat', to },
+                    { type: isGroupMessage ? 'groupchat' : 'chat', to },
                     xml('body', {}, putUrl),
                     xml('request', { xmlns: 'urn:xmpp:receipts' }), // Add the message receipts extension
                     xml('markable', { xmlns: 'urn:xmpp:chat-markers:0' }) // Add the chat markers extension
@@ -33,10 +36,9 @@ const useSendFile = (updateConversations) => {
 
                 // Send the message with the file URL
                 await xmppClient.send(fileMessage);
-                console.log('Message with file URL sent');
 
                 // Update the conversations state with the message
-                if (updateConversations) {
+                if (updateConversations && !isGroupMessage) {
                     updateConversations(to.split('@')[0], {
                         sender: username,
                         content: putUrl,

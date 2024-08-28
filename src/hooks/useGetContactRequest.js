@@ -18,26 +18,25 @@ const useGetContactRequest = () => {
                 const query = stanza.getChild('query', 'jabber:iq:roster');
                 if (query) {
                     const items = query.getChildren('item');
-                    
-                    // Imprime todos los contactos para inspeccionar sus atributos
-                    console.log("Todos los contactos en el roster:", items.map(item => ({
-                        jid: item.attrs.jid,
-                        name: item.attrs.name || item.attrs.jid,
-                        subscription: item.attrs.subscription,
-                        ask: item.attrs.ask,
-                    })));
 
-                    // Filtra los contactos con suscripción "from" y ask="subscribe"
-                    const requests = items.filter(item => 
-                        item.attrs.subscription === 'to' && item.attrs.ask === 'subscribe'
+                    const requests = items.filter(item =>
+                        item.attrs.subscription === 'none'
+                        || item.attrs.subscription === 'from'
                     );
+
                     setContactRequests(requests.map(item => ({
                         jid: item.attrs.jid,
                         name: item.attrs.name || item.attrs.jid,
                         subscription: item.attrs.subscription
                     })));
                     setLoading(false);
+                } else {
+                    setError("No se encontró un query de roster en la respuesta.");
+                    setLoading(false);
                 }
+            } else {
+                setError("La stanza recibida no es un IQ result.");
+                setLoading(false);
             }
         };
 

@@ -11,6 +11,8 @@ const ContactList = ({ contacts, onSelectContact }) => {
         return new Date(b.ultimo_mensaje.date) - new Date(a.ultimo_mensaje.date);
     };
 
+    console.log('Contacts:', contacts);
+
     const sortedContacts = [...contacts].sort(compareByDate);
 
     return (
@@ -26,6 +28,7 @@ const ContactList = ({ contacts, onSelectContact }) => {
                         username={{ name: contact.contacto, state: contact.estado }}
                         lastMessage={contact.ultimo_mensaje}
                         onClick={() => onSelectContact(contact.contacto)}
+                        unread={contact.unread}
                     />
                 ))
             )}
