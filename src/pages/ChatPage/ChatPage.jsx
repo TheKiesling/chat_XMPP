@@ -21,7 +21,7 @@ import useJoinGroup from '../../hooks/useJoinGroup';
 const ChatPage = () => {
     const { username } = useContext(SessionContext);
 
-    const { conversations, updateConversations, getGroupMessages } = useGetMessages();
+    const { conversations, updateConversations, resetUnreadCount } = useGetMessages();
     const [selectedContact, setSelectedContact] = useState(null);
     const { sendMessage } = useSendMessage(updateConversations);
     const { sendFile } = useSendFile(updateConversations);
@@ -30,6 +30,10 @@ const ChatPage = () => {
     const { joinGroupChat } = useJoinGroup();
 
     const [notifications, setNotifications] = useState([]);
+
+    useEffect(() => {
+        console.log('Conversation updated:', conversations);
+    }, [conversations]);
 
     useEffect(() => {
         if (contactRequests.length > 0) {
@@ -47,6 +51,7 @@ const ChatPage = () => {
     const [isConfigurationSelected, setIsConfigurationSelected] = useState(false);
     const [isGroupSelected, setIsGroupSelected] = useState(false);
     const [messageToGroup, setMessageToGroup] = useState(false);
+    const [contactsList, setContactsList] = useState([]);
 
     const { contacts } = useGetContacts();
     const { users } = useGetUsers();
@@ -55,14 +60,17 @@ const ChatPage = () => {
     const usersWithoutContacts = users.filter(user => !contacts.find(contact => contact.contacto === user.jid.split('@')[0]));
 
     // Combine the contacts and users lists
-    const contactsList = contacts.map(contact => { // Add the messages and the last message to the contacts
-        const conversation = conversations.find(conv => conv.contacto === contact.contacto);
-        return {
-            ...contact,
-            messages: conversation?.messages || [],
-            ultimo_mensaje: conversation?.messages[conversation.messages.length - 1] || null,
-        };
-    });
+    useEffect(() => {
+        setContactsList(contacts.map(contact => { // Add the messages and the last message to the contacts
+            const conversation = conversations.find(conv => conv.contacto === contact.contacto);
+            return {
+                ...contact,
+                messages: conversation?.messages || [],
+                ultimo_mensaje: conversation?.messages[conversation.messages.length - 1] || null,
+                unread: conversation?.unreadCount || 0,
+            };
+        }));
+    }, [contacts, conversations]);  
 
     const usersList = usersWithoutContacts.map(user => { // Add the messages and the last message to the users
         const conversation = conversations.find(conv => conv.contacto === user.jid.split('@')[0]);
@@ -71,6 +79,7 @@ const ChatPage = () => {
                 contacto: user.jid.split('@')[0],
                 messages: conversation.messages,
                 ultimo_mensaje: conversation.messages[conversation.messages.length - 1] || null,
+                unread: conversation.unreadCount || 0,
             };
         }
         return null;
@@ -83,6 +92,7 @@ const ChatPage = () => {
                 contacto: group.jid,
                 messages: conversation.messages,
                 ultimo_mensaje: conversation.messages[conversation.messages.length - 1] || null,
+                unread: conversation.unreadCount || 0,
             };
         }
         return null;
@@ -99,20 +109,12 @@ const ChatPage = () => {
         }
     };
 
-    useEffect(() => {
-        console.log('Selected contact:', selectedContact);
-    }, [selectedContact]);
-
 
     const handleSelectGroup = (groupJid) => {
         joinGroupChat(groupJid);
         setSelectedContact(groupJid);
         setMessageToGroup(true);
     };
-
-    useEffect(() => {
-        console.log('messageToGroup:', messageToGroup, 'selectedContact:', selectedContact);
-    }, [messageToGroup, selectedContact]);
 
     const handleForumSelect = () => {
         setIsForumSelected(true);
@@ -153,12 +155,19 @@ const ChatPage = () => {
         estado: user.state,
         messageStatus: user.messageStatus,
         messages: user.messages || [],
-        ultimo_mensaje: user.ultimo_mensaje || ''
+        ultimo_mensaje: user.ultimo_mensaje || '',
+        unread: user.unread || 0,
     }));
 
     const usersAndContacts = [...contactsList, ...usersInfo];
 
     const contact = usersAndContacts.find(contact => contact.contacto === selectedContact);
+
+    useEffect(() => {
+        if (contact) {
+            resetUnreadCount(contact.contacto);
+        }
+    }, [contact]);
 
     const handleSendMessage = (body) => {
         const to = messageToGroup ? `${selectedContact}@conference.${domain}` : `${selectedContact}@${domain}`;

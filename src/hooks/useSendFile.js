@@ -36,7 +36,6 @@ const useSendFile = (updateConversations) => {
 
                 // Send the message with the file URL
                 await xmppClient.send(fileMessage);
-                console.log('Message with file URL sent');
 
                 // Update the conversations state with the message
                 if (updateConversations && !isGroupMessage) {

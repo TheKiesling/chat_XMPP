@@ -19,7 +19,6 @@ const useJoinGroup = () => {
         try {
             await xmppClient.send(joinQuery);
             setStatus(`Joined group ${groupJid} successfully`);
-            console.log(`Joined group ${groupJid} successfully`);
         } catch (err) {
             console.error("Error joining group chat:", err);
             setError(`Error joining group chat: ${err.message}`);

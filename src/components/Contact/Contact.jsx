@@ -4,7 +4,7 @@ import styles from './Contact.module.css';
 import ProfilePhoto from '../ProfilePhoto';
 import { SessionContext } from '../../context/SessionContext';
 
-const Contact = ({ username, lastMessage, onClick }) => {
+const Contact = ({ username, lastMessage, onClick, unread }) => {
 
     const { username: session } = useContext(SessionContext);
 
@@ -19,7 +19,10 @@ const Contact = ({ username, lastMessage, onClick }) => {
             <ProfilePhoto initial={usernameInitial} state={usernameState} />
             <div className={styles.info}>
                 <div className={styles.topRow}>
-                    <div className={styles.username}>{username.name}</div>
+                    <div className={styles.username}>
+                        {username.name}
+                        <span className={styles.unread}>{unread}</span>
+                    </div>
                     <div className={styles.date}>{messageDate}</div>
                 </div>
                 <div className={styles.lastMessage}>

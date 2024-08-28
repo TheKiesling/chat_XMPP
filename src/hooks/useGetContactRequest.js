@@ -18,13 +18,6 @@ const useGetContactRequest = () => {
                 const query = stanza.getChild('query', 'jabber:iq:roster');
                 if (query) {
                     const items = query.getChildren('item');
-                    
-                    console.log("Todos los contactos en el roster:", items.map(item => ({
-                        jid: item.attrs.jid,
-                        name: item.attrs.name || item.attrs.jid,
-                        subscription: item.attrs.subscription,
-                        ask: item.attrs.ask,
-                    })));
 
                     const requests = items.filter(item =>
                         item.attrs.subscription === 'none'

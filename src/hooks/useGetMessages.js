@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext, useCallback } from 'react';
 import { SessionContext } from '../context/SessionContext';
 import { xml } from '@xmpp/client';
 
@@ -8,11 +8,7 @@ const useGetMessages = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        setConversations([]);
-    }, []);
-
-    useEffect(() => {
-        if (!xmppClient) return;
+        if (!xmppClient || !username) return;
 
         const handleStanza = (stanza) => {
             if (stanza.is('message') && !stanza.getChild('result', 'urn:xmpp:mam:2')) {
@@ -29,14 +25,13 @@ const useGetMessages = () => {
                     if (stanza.attrs.type === "groupchat") {
                         contact = from.split('/')[0].split('@')[0]; 
                         sender = from.split('/')[1];
-                        // Evitar duplicar el prefijo del sender en el caso de que sea un mensaje enviado por el usuario
-                        newMessage = { sender, content: sender !== username ? `${sender}: ${body}` : body, date };
+                        newMessage = { sender, content: sender !== username ? `${sender}: ${body}` : body, date, read: false };
                     } else {
                         const fromUsername = from.split('/')[0].split('@')[0];
                         const toUsername = to.split('/')[0].split('@')[0];
                         contact = fromUsername === username ? toUsername : fromUsername;
                         sender = fromUsername;
-                        newMessage = { sender, content: body, date };
+                        newMessage = { sender, content: body, date, read: false };
                     }
 
                     updateConversations(contact, newMessage);
@@ -57,7 +52,7 @@ const useGetMessages = () => {
                     const fromUsername = from.split('/')[0].split('@')[0];
                     const toUsername = to.split('/')[0].split('@')[0];
                     const contact = fromUsername === username ? toUsername : fromUsername;
-                    const archivedMessage = { sender: fromUsername, content: body, date };
+                    const archivedMessage = { sender: fromUsername, content: body, date, read: true };
 
                     updateConversations(contact, archivedMessage);
                 }
@@ -67,7 +62,7 @@ const useGetMessages = () => {
         const handlePresence = (stanza) => {
             if (stanza.is('presence')) {
                 const fromJid = stanza.attrs.from.split('/')[0].split('@')[0];
-                const estado = stanza.attrs.type;
+                const estado = stanza.attrs.type || 'available';
                 const messageStatus = stanza.getChildText('status') || '';
 
                 setConversations(prevConversations => {
@@ -81,7 +76,7 @@ const useGetMessages = () => {
                             return conv;
                         });
                     } else {
-                        return [...prevConversations, { contacto: fromJid, estado, messageStatus, messages: [] }];
+                        return [...prevConversations, { contacto: fromJid, estado, messageStatus, messages: [], unreadCount: 0 }];
                     }
                 });
             }
@@ -93,7 +88,7 @@ const useGetMessages = () => {
         const fetchArchivedMessages = async () => {
             const mamRequest = xml(
                 'iq',
-                { type: 'set', id: 'mam1' },
+                { type: 'set', id: `mam-${Date.now()}` },
                 xml('query', { xmlns: 'urn:xmpp:mam:2' },
                     xml('x', { xmlns: 'jabber:x:data', type: 'submit' },
                         xml('field', { var: 'FORM_TYPE', type: 'hidden' },
@@ -110,19 +105,23 @@ const useGetMessages = () => {
         return () => {
             xmppClient.off('stanza', handleStanza);
             xmppClient.off('presence', handlePresence);
-        }
+        };
     }, [xmppClient, username]);
 
-    function updateConversations(contact, newMessage) {
+    const updateConversations = useCallback((contact, newMessage) => {
         setConversations(prevConversations => {
             const conversationExists = prevConversations.some(conv => conv.contacto === contact);
 
             if (conversationExists) {
                 return prevConversations.map(conv => {
                     if (conv.contacto === contact) {
+                        const updatedMessages = [...conv.messages, newMessage];
+                        const unreadCount = newMessage.read ? conv.unreadCount : conv.unreadCount + 1;
+
                         return {
                             ...conv,
-                            messages: [...conv.messages, newMessage],
+                            messages: updatedMessages,
+                            unreadCount,
                         };
                     }
                     return conv;
@@ -133,15 +132,33 @@ const useGetMessages = () => {
                     {
                         contacto: contact,
                         messages: [newMessage],
-                        estado: contact.status,
+                        estado: 'available',
                         messageStatus: '',
+                        unreadCount: newMessage.read ? 0 : 1,
                     },
                 ];
             }
         });
-    }
+    }, []);
 
-    return { conversations, loading, updateConversations };
+    const resetUnreadCount = (contact) => {
+        console.log('contact:', contact);
+        setConversations(prevConversations =>
+            prevConversations.map(conv => {
+                if (conv.contacto === contact) {
+                    return {
+                        ...conv,
+                        unreadCount: 0,
+                    };
+                }
+                return conv;
+            })
+        );
+        console.log('conversation reset:', conversations);
+    };
+
+
+    return { conversations, loading, updateConversations, resetUnreadCount };
 };
 
 export default useGetMessages;
